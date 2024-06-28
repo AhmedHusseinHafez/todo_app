@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:todo_app/app/app.dart';
-import 'package:todo_app/core/resources/bloc_observer.dart';
-import 'package:todo_app/core/resources/injection.dart';
+import 'package:todo_app/src/app/app.dart';
+import 'package:todo_app/src/core/resources/bloc_observer.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

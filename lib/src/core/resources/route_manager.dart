@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/core/resources/injection.dart';
-import 'package:todo_app/core/resources/strings_manager.dart';
-import 'package:todo_app/core/web_services/connection_helper.dart';
-import 'package:todo_app/features/home/presentation/home.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
+import 'package:todo_app/src/core/resources/strings_manager.dart';
+import 'package:todo_app/src/core/web_services/connection_helper.dart';
+import 'package:todo_app/src/features/home/presentation/screens/home.dart';
 
 class Routes {
-  static const String navigationViewRoute = '/navigationViewRoute';
+  static const String homePage = '/';
 }
 
 class RouteGenerator {
@@ -19,7 +19,7 @@ class RouteGenerator {
 
   Route? getRoute(RouteSettings settings) {
     switch (settings.name) {
-      case Routes.navigationViewRoute:
+      case Routes.homePage:
         return MaterialPageRoute(
           builder: (_) => const HomePage(),
         );

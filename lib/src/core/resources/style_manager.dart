@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/core/resources/font_manager.dart';
+import 'package:todo_app/src/core/resources/font_manager.dart';
 
 class StyleManager {
   const StyleManager._internal();
@@ -32,11 +32,11 @@ class StyleManager {
   }
 
   /// light style
-  static TextStyle getLightStyle(
-      {double? fontSize, Color? color, double? height}) {
-    return _getTextStyle(fontSize ?? FontSize.s12, FontWeightManager.light,
-        color ?? Colors.black, height);
-  }
+  // static TextStyle getLightStyle(
+  //     {double? fontSize, Color? color, double? height}) {
+  //   return _getTextStyle(fontSize ?? FontSize.s12, FontWeightManager.light,
+  //       color ?? Colors.black, height);
+  // }
 
   /// bold style
   static TextStyle getBoldStyle(

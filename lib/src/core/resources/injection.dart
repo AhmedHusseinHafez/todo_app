@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:get_it/get_it.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todo_app/core/web_services/connection_helper.dart';
+import 'package:todo_app/src/core/web_services/connection_helper.dart';
 
 import 'constants.dart';
 

@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:todo_app/core/resources/color_manager.dart';
-import 'package:todo_app/core/resources/font_manager.dart';
-import 'package:todo_app/core/resources/style_manager.dart';
+import 'package:todo_app/src/core/resources/color_manager.dart';
+import 'package:todo_app/src/core/resources/font_manager.dart';
+import 'package:todo_app/src/core/resources/style_manager.dart';
 
 mixin AppTheme implements ThemeData {
   static ThemeData get kLightTheme => ThemeData(
@@ -11,7 +10,7 @@ mixin AppTheme implements ThemeData {
         useMaterial3: true,
 
         //! Scaffold Color
-        scaffoldBackgroundColor: const Color(0xffF2F5FA),
+        scaffoldBackgroundColor: ColorManager.white,
 
         // hintColor: ColorManager.whiteWithOpacity30,
 
@@ -19,7 +18,7 @@ mixin AppTheme implements ThemeData {
         // primaryColorLight: ,
         // primaryColorDark: ,
         // disabledColor: ColorManager.whiteWithOpacity30,
-        splashColor: const Color(0xffD2DBEA),
+        // splashColor: const Color(0xffD2DBEA),
         splashFactory: InkRipple.splashFactory,
 
         // //!Divider
@@ -30,36 +29,23 @@ mixin AppTheme implements ThemeData {
         //   thickness: 2,
         // ),
 
-        // //!App bar
-        // appBarTheme: AppBarTheme(
-        //   systemOverlayStyle: Platform.isIOS
-        //       ? null
-        //       : const SystemUiOverlayStyle(
-        //           statusBarColor: ColorManager.transparent,
-        //           statusBarIconBrightness: Brightness.light,
-        //           systemNavigationBarColor: ColorManager.richBlack,
-        //         ),
-        //   centerTitle: true,
-        //   foregroundColor: ColorManager.white,
-        //   elevation: 0.0,
-        //   backgroundColor: Colors.transparent,
-        //   titleTextStyle: _myTextTheme().titleLarge,
-        // ),
-
-        //! Page Transition
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: ZoomPageTransitionsBuilder(),
-            TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-          },
+        ///!App bar
+        appBarTheme: AppBarTheme(
+          surfaceTintColor: ColorManager.white,
+          centerTitle: false,
+          foregroundColor: ColorManager.black,
+          elevation: 0.0,
+          backgroundColor: Colors.white,
+          titleTextStyle: _myTextTheme().titleMedium,
         ),
 
         //! Action Icon
         actionIconTheme: ActionIconThemeData(
           backButtonIconBuilder: (context) {
             return const Icon(
-              size: 30,
-              Icons.arrow_back_rounded,
+              size: 20,
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.black,
             );
           },
         ),
@@ -78,8 +64,8 @@ mixin AppTheme implements ThemeData {
 
         fontFamily: FontConstants.defaultFontFamily,
 
-        // //!TextTheme
-        // textTheme: _myTextTheme(),
+        //!TextTheme
+        textTheme: _myTextTheme(),
 
         // textSelectionTheme: const TextSelectionThemeData(
         //   cursorColor: ColorManager.secondary,
@@ -124,6 +110,12 @@ mixin AppTheme implements ThemeData {
         //   ),
         // ),
 
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          iconSize: 30,
+          backgroundColor: ColorManager.primary,
+          foregroundColor: ColorManager.white,
+        ),
+
         iconButtonTheme: IconButtonThemeData(
           style: ButtonStyle(
             backgroundColor:
@@ -146,15 +138,15 @@ mixin AppTheme implements ThemeData {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.r),
           ),
-          titleTextStyle: StyleManager.getLightStyle(
-            fontSize: FontSize.s13,
-            color: ColorManager.white,
+          titleTextStyle: StyleManager.getSemiBoldStyle(
+            fontSize: FontSize.s22,
+            color: ColorManager.primary,
           ),
-          subtitleTextStyle: StyleManager.getLightStyle(
+          subtitleTextStyle: StyleManager.getMediumStyle(
             fontSize: FontSize.s10,
             color: ColorManager.black,
           ),
-          horizontalTitleGap: 21.w,
+          horizontalTitleGap: 10.w,
         ),
 
         //! Bottom Nav Bar Theme
@@ -173,13 +165,13 @@ mixin AppTheme implements ThemeData {
         // ),
 
         // //! Checkbox Theme
-        // checkboxTheme: CheckboxThemeData(
-        //   side: const BorderSide(width: 1),
-        //   fillColor: const MaterialStatePropertyAll(ColorManager.secondary),
-        //   checkColor: const MaterialStatePropertyAll(ColorManager.white),
-        //   shape:
-        //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
-        // ),
+        checkboxTheme: CheckboxThemeData(
+          side: const BorderSide(width: 1),
+          fillColor: const WidgetStatePropertyAll(ColorManager.transparent),
+          checkColor: const WidgetStatePropertyAll(Colors.green),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.r)),
+        ),
       );
 
   // static TextStyle _getTFFFontStyle({bool? error}) {
@@ -205,4 +197,42 @@ mixin AppTheme implements ThemeData {
   //     ),
   //   );
   // }
+
+  ///!TextTheme
+  static TextTheme _myTextTheme() {
+    return TextTheme(
+      headlineLarge: StyleManager.getBoldStyle(fontSize: FontSize.s30),
+      // headlineMedium: ,
+      // headlineSmall: ,
+
+      bodyLarge: StyleManager.getMediumStyle(fontSize: FontSize.s20),
+      bodyMedium: StyleManager.getMediumStyle(fontSize: FontSize.s16),
+      // bodySmall: ,
+
+      displayLarge: StyleManager.getSemiBoldStyle(
+        fontSize: FontSize.s24,
+      ),
+
+      // displayMedium: StyleManager.getRegularStyle(
+      //   fontSize: FontSize.s21,
+      //   color: ColorManager.white,
+      // ),
+
+      // displaySmall: StyleManager.getRegularStyle(
+      //   fontSize: FontSize.s15,
+      //   color: ColorManager.silverGray,
+      // ),
+
+      // labelLarge: ,
+      // labelMedium: StyleManager.getMediumStyle(
+      //   color: ColorManager.charcoalGray,
+      //   fontSize: FontSize.s21,
+      // ), // For ElevatedButton
+      // labelSmall: ,
+
+      // titleLarge: ,
+      titleMedium: StyleManager.getMediumStyle(fontSize: FontSize.s22),
+      // titleSmall: ,
+    );
+  }
 }

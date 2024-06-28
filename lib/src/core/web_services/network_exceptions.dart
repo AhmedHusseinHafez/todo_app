@@ -4,8 +4,8 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:todo_app/core/resources/common.dart';
-import 'package:todo_app/core/resources/strings_manager.dart';
+import 'package:todo_app/src/core/resources/common.dart';
+import 'package:todo_app/src/core/resources/strings_manager.dart';
 
 import 'error_model.dart';
 

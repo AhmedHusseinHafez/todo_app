@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:todo_app/core/resources/theme_manager.dart';
+import 'package:todo_app/src/core/resources/strings_manager.dart';
+import 'package:todo_app/src/core/resources/theme_manager.dart';
 import 'package:todo_app/generated/l10n.dart';
 import '../core/resources/route_manager.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   // MyApp({super.key});
@@ -14,7 +17,6 @@ class MyApp extends StatelessWidget {
   factory MyApp() => _instance; // factory to get single instance
 
   final RouteGenerator routeGenerator = RouteGenerator();
-  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
       useInheritedMediaQuery: true,
       builder: (context, state) {
         return MaterialApp(
-          title: 'ToDo App',
+          title: StringsManager.appTitle,
           navigatorKey: navigatorKey,
           locale: const Locale('en'),
           localizationsDelegates: const [
@@ -38,8 +40,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           onGenerateRoute: routeGenerator.getRoute,
           theme: AppTheme.kLightTheme,
-          themeMode: ThemeMode.system,
-          initialRoute: Routes.navigationViewRoute,
+          initialRoute: Routes.homePage,
         );
       },
     );

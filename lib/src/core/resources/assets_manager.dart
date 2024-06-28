@@ -4,4 +4,6 @@ const String lottiePath = 'assets/lottie';
 const String tempPath = 'assets/temp';
 const String videoPath = 'assets/videos';
 
-class AssetsManager {}
+class AssetsManager {
+  static String noData = "$svgPath/noData.svg";
+}
