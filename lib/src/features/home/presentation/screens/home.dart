@@ -5,6 +5,7 @@ import 'package:todo_app/src/core/resources/color_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/list_tile_widget.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/text_field.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/top_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +24,17 @@ class _HomePageState extends State<HomePage> {
       body: _body(context),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              width: double.infinity,
+              height: .8.sh,
+              child: Center(child: TaskTextField()),
+            ),
+          );
+        },
       ),
     );
   }
@@ -45,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   Widget _top() {
     return Container(
       color: ColorManager.white,
-      height: 140.h,
+      height: 142.h,
       child: const Column(
         children: [
           TopSection(),

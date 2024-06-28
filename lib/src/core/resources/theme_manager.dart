@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
 import 'package:todo_app/src/core/resources/font_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
+import 'package:todo_app/src/core/resources/values_manager.dart';
 
 mixin AppTheme implements ThemeData {
   static ThemeData get kLightTheme => ThemeData(
@@ -64,39 +65,35 @@ mixin AppTheme implements ThemeData {
 
         fontFamily: FontConstants.defaultFontFamily,
 
-        //!TextTheme
+        ///!TextTheme
         textTheme: _myTextTheme(),
 
-        // textSelectionTheme: const TextSelectionThemeData(
-        //   cursorColor: ColorManager.secondary,
-        //   selectionColor: ColorManager.secondary,
-        //   selectionHandleColor: ColorManager.secondary,
-        // ),
+    
 
-        // //! TFF Theme
-        // inputDecorationTheme: InputDecorationTheme(
-        //   contentPadding: EdgeInsets.symmetric(
-        //     horizontal: AppPadding.p16.w,
-        //     vertical: AppPadding.p16.h,
-        //   ),
+        ///! TFF Theme
+        inputDecorationTheme: InputDecorationTheme(
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: AppPadding.p16.w,
+            vertical: AppPadding.p16.h,
+          ),
 
-        //   filled: true,
-        //   fillColor: ColorManager.jetBlack,
+          filled: true,
+          fillColor: ColorManager.white,
 
-        //   hintStyle: _getTFFFontStyle(),
-        //   labelStyle: _getTFFFontStyle(),
-        //   errorStyle: _getTFFFontStyle(error: true),
-        //   //enabledBorder the border before click on field
-        //   enabledBorder: _getTFFBorderStyle(),
-        //   //focusedBorder the border after click on field
-        //   focusedBorder: _getTFFBorderStyle(color: ColorManager.secondary),
-        //   errorBorder: _getTFFBorderStyle(color: ColorManager.brightRed),
-        //   focusedErrorBorder: _getTFFBorderStyle(),
-        //   // disabledBorder: _getTFFBorderStyle(),
-        //   border: _getTFFBorderStyle(),
-        //   // iconColor: ColorManager.secondary,
-        //   // suffixIconColor: ColorManager.secondary,
-        // ),
+          hintStyle: _getTFFFontStyle(),
+          labelStyle: _getTFFFontStyle(),
+          errorStyle: _getTFFFontStyle(error: true),
+          //enabledBorder the border before click on field
+          enabledBorder: _getTFFBorderStyle(),
+          //focusedBorder the border after click on field
+          focusedBorder: _getTFFBorderStyle(color: ColorManager.primary),
+          errorBorder: _getTFFBorderStyle(color: ColorManager.red),
+          focusedErrorBorder: _getTFFBorderStyle(),
+          // disabledBorder: _getTFFBorderStyle(),
+          border: _getTFFBorderStyle(),
+          // iconColor: ColorManager.secondary,
+          // suffixIconColor: ColorManager.secondary,
+        ),
 
         // textButtonTheme: TextButtonThemeData(
         //   style: ButtonStyle(
@@ -149,21 +146,6 @@ mixin AppTheme implements ThemeData {
           horizontalTitleGap: 10.w,
         ),
 
-        //! Bottom Nav Bar Theme
-        // bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        //   selectedLabelStyle:
-        //       StyleManager.getRegularStyle(fontSize: FontSize.s12),
-        //   unselectedLabelStyle:
-        //       StyleManager.getRegularStyle(fontSize: FontSize.s12),
-        //   backgroundColor: ColorManager.richBlack,
-        //   showSelectedLabels: true,
-        //   showUnselectedLabels: true,
-        //   selectedItemColor: ColorManager.secondary,
-        //   unselectedItemColor: ColorManager.charcoalGray,
-        //   type: BottomNavigationBarType.fixed,
-        //   elevation: 0,
-        // ),
-
         // //! Checkbox Theme
         checkboxTheme: CheckboxThemeData(
           side: const BorderSide(width: 1),
@@ -174,29 +156,29 @@ mixin AppTheme implements ThemeData {
         ),
       );
 
-  // static TextStyle _getTFFFontStyle({bool? error}) {
-  //   return error ?? false
-  //       ? StyleManager.getRegularStyle(
-  //           color: ColorManager.brightRed,
-  //           fontSize: FontSize.s13,
-  //         )
-  //       : StyleManager.getRegularStyle(
-  //           color: ColorManager.whiteWithOpacity30,
-  //           fontSize: FontSize.s13,
-  //         );
-  // }
+  static TextStyle _getTFFFontStyle({bool? error}) {
+    return error ?? false
+        ? StyleManager.getRegularStyle(
+            color: ColorManager.red,
+            fontSize: FontSize.s13,
+          )
+        : StyleManager.getRegularStyle(
+            color: ColorManager.white,
+            fontSize: FontSize.s13,
+          );
+  }
 
-  // static InputBorder _getTFFBorderStyle({Color? color}) {
-  //   return OutlineInputBorder(
-  //     borderSide: BorderSide(
-  //       color: color ?? ColorManager.deepCharcoal,
-  //       width: 1.w,
-  //     ),
-  //     borderRadius: BorderRadius.circular(
-  //       100.r,
-  //     ),
-  //   );
-  // }
+  static InputBorder _getTFFBorderStyle({Color? color}) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(
+        color: color ?? ColorManager.black,
+        width: 1.w,
+      ),
+      borderRadius: BorderRadius.circular(
+        20.r,
+      ),
+    );
+  }
 
   ///!TextTheme
   static TextTheme _myTextTheme() {
