@@ -51,24 +51,22 @@ mixin AppTheme implements ThemeData {
           },
         ),
 
-        // //!ElevatedButtonTheme
-        // elevatedButtonTheme: ElevatedButtonThemeData(
-        //   style: ElevatedButton.styleFrom(
-        //     fixedSize: Size(327.w, 46.h),
-        //     shape: const StadiumBorder(),
-        //     backgroundColor: ColorManager.secondary,
-        //     foregroundColor: ColorManager.white,
-        //     textStyle: StyleManager.getMediumStyle(fontSize: FontSize.s12),
-        //     surfaceTintColor: ColorManager.primary,
-        //   ),
-        // ),
+        ///!ElevatedButtonTheme
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            fixedSize: Size(327.w, 46.h),
+            shape: const StadiumBorder(),
+            backgroundColor: ColorManager.primary,
+            foregroundColor: ColorManager.white,
+            textStyle: StyleManager.getMediumStyle(fontSize: FontSize.s16),
+            surfaceTintColor: ColorManager.primary,
+          ),
+        ),
 
         fontFamily: FontConstants.defaultFontFamily,
 
         ///!TextTheme
         textTheme: _myTextTheme(),
-
-    
 
         ///! TFF Theme
         inputDecorationTheme: InputDecorationTheme(
@@ -146,7 +144,7 @@ mixin AppTheme implements ThemeData {
           horizontalTitleGap: 10.w,
         ),
 
-        // //! Checkbox Theme
+        ///! Checkbox Theme
         checkboxTheme: CheckboxThemeData(
           side: const BorderSide(width: 1),
           fillColor: const WidgetStatePropertyAll(ColorManager.transparent),

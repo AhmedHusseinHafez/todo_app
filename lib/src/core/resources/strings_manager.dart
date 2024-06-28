@@ -17,4 +17,12 @@ class StringsManager {
 
   static String doneState = "Done";
   static String inProgressState = "In Progress";
+  static String upDateTask = "Update Task";
+  static String createNewTask = "Create New Task";
+
+  static String updatedAt = "Updated At:";
+  static String createdAt = "Created At:";
+
+  static String title = "Title";
+  static String description = "Description";
 }

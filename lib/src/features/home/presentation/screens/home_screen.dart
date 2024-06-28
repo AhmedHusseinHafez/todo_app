@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
+import 'package:todo_app/src/core/resources/constants.dart';
+import 'package:todo_app/src/core/resources/route_manager.dart';
 
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/list_tile_widget.dart';
-import 'package:todo_app/src/features/home/presentation/widgets/text_field.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/no_tasks_widget.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/top_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,26 +18,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<int> item = List<int>.generate(10, (index) => index);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(StringsManager.welcome)),
+      appBar: _appBar(),
       body: _body(context),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) => Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              width: double.infinity,
-              height: .8.sh,
-              child: Center(child: TaskTextField()),
-            ),
-          );
-        },
-      ),
+      floatingActionButton: _floatingActionButton(context),
+    );
+  }
+
+  AppBar _appBar() => AppBar(title: Text(StringsManager.welcome), actions: [
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.sync,
+            color: ColorManager.black,
+          ),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.delete_outline,
+            color: ColorManager.red,
+          ),
+        ),
+      ]);
+
+  Widget _floatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      child: const Icon(Icons.add),
+      onPressed: () {
+        Navigator.pushNamed(context, Routes.taskScreen, arguments: {
+          "model": null,
+        });
+      },
     );
   }
 
@@ -46,8 +62,8 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _top(),
-          // const NoTasksWidget(),
-          _list(),
+          if (tempTasks.isEmpty) const NoTasksWidget(),
+          if (tempTasks.isNotEmpty) _list(),
         ],
       ),
     );
@@ -71,10 +87,10 @@ class _HomePageState extends State<HomePage> {
       child: ListView.separated(
         itemBuilder: (context, index) => Dismissible(
           direction: DismissDirection.endToStart,
-          key: ValueKey<int>(item[index]),
+          key: Key(tempTasks[index].id!),
           onDismissed: (direction) {
             setState(() {
-              item.removeAt(index);
+              tempTasks.removeAt(index);
             });
 
             ScaffoldMessenger.of(context).showSnackBar(
@@ -94,15 +110,11 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
                 color: Theme.of(context).listTileTheme.tileColor,
                 borderRadius: BorderRadius.circular(10.r)),
-            child: ListTileWidget(
-              title: "Go To Gym ${item[index]}",
-              description:
-                  "Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym Go To Gym",
-            ),
+            child: ListTileWidget(model: tempTasks[index]),
           ),
         ),
         separatorBuilder: (context, index) => 12.verticalSpace,
-        itemCount: item.length,
+        itemCount: tempTasks.length,
       ),
     );
   }

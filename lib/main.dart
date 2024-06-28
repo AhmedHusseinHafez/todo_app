@@ -10,12 +10,6 @@ import 'package:todo_app/src/core/resources/injection.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
-    ),
-  );
   Future.wait([
     initGetIt(),
     ScreenUtil.ensureScreenSize(),
