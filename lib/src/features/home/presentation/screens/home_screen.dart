@@ -1,12 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
-import 'package:todo_app/src/core/resources/constants.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
-
 import 'package:todo_app/src/core/resources/strings_manager.dart';
+import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
-import 'package:todo_app/src/features/home/presentation/widgets/list_tile_widget.dart';
+import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/logic/cubit/tasks_logic_cubit.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/home_list_view.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/no_tasks_widget.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/top_section.dart';
 
@@ -18,6 +21,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<TaskModel>? list;
+  @override
+  void initState() {
+    super.initState();
+    RouteGenerator.tasksLogicCubit.getTasks();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,46 +37,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  AppBar _appBar() => AppBar(title: Text(StringsManager.welcome), actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.sync,
-            color: ColorManager.black,
-          ),
+  AppBar _appBar() {
+    return AppBar(title: Text(StringsManager.welcome), actions: [
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(
+          Icons.sync,
+          color: ColorManager.black,
         ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.delete_outline,
-            color: ColorManager.red,
-          ),
-        ),
-      ]);
-
-  Widget _floatingActionButton(BuildContext context) {
-    return FloatingActionButton(
-      child: const Icon(Icons.add),
-      onPressed: () {
-        Navigator.pushNamed(context, Routes.taskScreen, arguments: {
-          "model": null,
-        });
-      },
-    );
-  }
-
-  Widget _body(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppPadding.p16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _top(),
-          if (tempTasks.isEmpty) const NoTasksWidget(),
-          if (tempTasks.isNotEmpty) _list(),
-        ],
       ),
-    );
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(
+          Icons.delete_outline,
+          color: ColorManager.red,
+        ),
+      ),
+    ]);
   }
 
   Widget _top() {
@@ -82,40 +69,56 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _list() {
-    return Expanded(
-      child: ListView.separated(
-        itemBuilder: (context, index) => Dismissible(
-          direction: DismissDirection.endToStart,
-          key: Key(tempTasks[index].id!),
-          onDismissed: (direction) {
-            setState(() {
-              tempTasks.removeAt(index);
-            });
+  Widget _buildBloc() {
+    return BlocBuilder<TasksLogicCubit, TasksLogicState>(
+      builder: (context, state) {
+        state.mapOrNull(
+          getTasksSuccess: (state) => list = state.tasks,
+          getTasksError: (state) => showErrorToast(state.error, context),
+        );
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Task dismissed')),
-            );
-          },
-          background: Container(
-            decoration: BoxDecoration(
-                color: Colors.red, borderRadius: BorderRadius.circular(10.r)),
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).listTileTheme.tileColor,
-                borderRadius: BorderRadius.circular(10.r)),
-            child: ListTileWidget(model: tempTasks[index]),
-          ),
-        ),
-        separatorBuilder: (context, index) => 12.verticalSpace,
-        itemCount: tempTasks.length,
+        if (state == const TasksLogicState.getTasksLoading()) {
+          return _buildLoading();
+        } else if (list != null) {
+          return HomeListView(list: list!);
+        } else {
+          return const NoTasksWidget();
+        }
+      },
+    );
+  }
+
+  Widget _body(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppPadding.p16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _top(),
+          Expanded(child: _buildBloc()),
+        ],
       ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return Column(
+      children: [
+        0.3.sh.verticalSpace,
+        Center(child: CupertinoActivityIndicator(radius: 15.r)),
+      ],
+    );
+  }
+
+  Widget _floatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      child: const Icon(Icons.add),
+      onPressed: () {
+        Navigator.pushNamed(context, Routes.taskScreen, arguments: {
+          // model is [null] because we are [creating a new task] in this screen and [not editing an existing one].
+          "model": null,
+        });
+      },
     );
   }
 }

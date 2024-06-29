@@ -21,10 +21,9 @@ class TaskTextField extends StatelessWidget {
       maxLines: 4,
       maxLength: 200,
       decoration: InputDecoration(
-        errorStyle: const TextStyle(color: ColorManager.black),
+        errorStyle: const TextStyle(color: ColorManager.red),
         hintText: hint ?? '',
         hintStyle: StyleManager.getBoldStyle(fontSize: FontSize.s12),
-        alignLabelWithHint: true,
       ),
       validator: validator,
       buildCounter: (context,

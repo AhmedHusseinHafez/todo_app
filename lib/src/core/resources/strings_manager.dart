@@ -25,4 +25,8 @@ class StringsManager {
 
   static String title = "Title";
   static String description = "Description";
+
+  static String descRequired = "Description is required";
+
+  static String titleRequired = "Title is required";
 }

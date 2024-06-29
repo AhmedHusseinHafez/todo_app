@@ -144,6 +144,10 @@ mixin AppTheme implements ThemeData {
           horizontalTitleGap: 10.w,
         ),
 
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: ColorManager.black,
+        ),
+
         ///! Checkbox Theme
         checkboxTheme: CheckboxThemeData(
           side: const BorderSide(width: 1),

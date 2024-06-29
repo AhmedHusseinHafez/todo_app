@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/constants.dart';
+import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
@@ -23,7 +24,12 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   late final TextEditingController _titleCtr;
+
   late final TextEditingController _descCtr;
+
+  final _formKey = GlobalKey<FormState>();
+
+  var _autoValidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
@@ -60,9 +66,8 @@ class _TaskScreenState extends State<TaskScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _title(),
-              10.verticalSpace,
-              _desc(),
+              _form(),
+              15.verticalSpace,
               _button(),
             ],
           ),
@@ -71,34 +76,16 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  Widget _desc() {
-    return TaskTextField(
-      hint: StringsManager.description,
-      controller: _descCtr,
-    );
-  }
-
-  Widget _button() {
-    return ElevatedButton(
-      onPressed: () {
-        if (widget.model == null) {
-          tempTasks.add(
-            TaskModel(
-              id: const Uuid().v1(),
-              title: _titleCtr.text, // 1
-              description: _descCtr.text, // 2
-              status: "In Progress", // 3
-              isDone: false, // 4
-              createdAt: DateTime.now().toString(), // 5
-              updatedAt: null, // 6
-            ),
-          );
-        } else {}
-      },
-      child: Text(
-        (widget.model == null)
-            ? StringsManager.createNewTask
-            : StringsManager.upDateTask,
+  Widget _form() {
+    return Form(
+      key: _formKey,
+      autovalidateMode: _autoValidateMode,
+      child: Column(
+        children: [
+          _title(),
+          10.verticalSpace,
+          _desc(),
+        ],
       ),
     );
   }
@@ -110,6 +97,60 @@ class _TaskScreenState extends State<TaskScreen> {
         hintText: StringsManager.title,
         hintStyle: StyleManager.getBoldStyle(),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return StringsManager.titleRequired;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _desc() {
+    return TaskTextField(
+      hint: StringsManager.description,
+      controller: _descCtr,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return StringsManager.descRequired;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _button({bool isLoading = false}) {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          if (widget.model == null) {
+            RouteGenerator.tasksLogicCubit.addTask(
+              TaskModel(
+                id: const Uuid().v1(),
+                title: _titleCtr.text,
+                description: _descCtr.text,
+                status: AppConstants.taskStateInProgress,
+                isDone: false,
+                createdAt: DateTime.now().toString(),
+                updatedAt: null,
+              ),
+            );
+          } else {}
+        } else {
+          _autoValidateMode = AutovalidateMode.onUserInteraction;
+        }
+      },
+      child: isLoading
+          ? SizedBox(
+              width: 20.w,
+              height: 20.h,
+              child: CircularProgressIndicator(strokeWidth: 1.5.h),
+            )
+          : Text(
+              (widget.model == null)
+                  ? StringsManager.createNewTask
+                  : StringsManager.upDateTask,
+            ),
     );
   }
 

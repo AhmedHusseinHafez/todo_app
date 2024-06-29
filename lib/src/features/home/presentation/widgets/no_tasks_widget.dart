@@ -14,7 +14,7 @@ class NoTasksWidget extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          150.verticalSpace,
+          0.2.sh.verticalSpace,
           SvgPicture.asset(AssetsManager.noData),
           10.verticalSpace,
           Text(

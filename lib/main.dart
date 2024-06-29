@@ -6,11 +6,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/app/app.dart';
 import 'package:todo_app/src/core/resources/bloc_observer.dart';
 import 'package:todo_app/src/core/resources/injection.dart';
+import 'package:todo_app/src/core/resources/local_helper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Future.wait([
+    hiveInit(),
     initGetIt(),
     ScreenUtil.ensureScreenSize(),
     SystemChrome.setPreferredOrientations([
