@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
-import 'package:todo_app/src/features/home/logic/cubit/tasks_logic_cubit.dart';
+import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
+import 'package:todo_app/src/features/home/logic/get_tasks/get_tasks_cubit.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/home_list_view.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/no_tasks_widget.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/top_section.dart';
@@ -25,7 +27,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    RouteGenerator.tasksLogicCubit.getTasks();
+    RouteGenerator.getTasksCubit.getTasks();
+    // RouteGenerator.getTasksCubit.getTasksFromApi();
   }
 
   @override
@@ -40,14 +43,18 @@ class _HomePageState extends State<HomePage> {
   AppBar _appBar() {
     return AppBar(title: Text(StringsManager.welcome), actions: [
       IconButton(
-        onPressed: () {},
+        onPressed: () {
+          getIt<ToDoRepository>().syncWithServer();
+        },
         icon: const Icon(
           Icons.sync,
           color: ColorManager.black,
         ),
       ),
       IconButton(
-        onPressed: () {},
+        onPressed: () {
+          getIt<ToDoRepository>().deleteAllToDos();
+        },
         icon: const Icon(
           Icons.delete_outline,
           color: ColorManager.red,
@@ -70,14 +77,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBloc() {
-    return BlocBuilder<TasksLogicCubit, TasksLogicState>(
+    return BlocConsumer<GetTasksCubit, GetTasksState>(
+      listener: (context, state) {
+        state.mapOrNull(
+          getTasksSuccess: (state) => list = state.tasks,
+        );
+      },
       builder: (context, state) {
         state.mapOrNull(
           getTasksSuccess: (state) => list = state.tasks,
           getTasksError: (state) => showErrorToast(state.error, context),
         );
 
-        if (state == const TasksLogicState.getTasksLoading()) {
+        if (state == const GetTasksState.getTasksLoading()) {
           return _buildLoading();
         } else if (list != null) {
           return HomeListView(list: list!);

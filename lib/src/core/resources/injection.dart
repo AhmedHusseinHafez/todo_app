@@ -3,7 +3,12 @@ import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:get_it/get_it.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/src/core/web_services/connection_helper.dart';
-import 'package:todo_app/src/features/home/logic/cubit/tasks_logic_cubit.dart';
+import 'package:todo_app/src/core/web_services/web_services.dart';
+import 'package:todo_app/src/features/home/data/local_data_source/todo_db_service.dart';
+import 'package:todo_app/src/features/home/data/remote_data_source/remote_data_source.dart';
+import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
+import 'package:todo_app/src/features/home/logic/check_box_logic_cubit/check_box_logic_cubit.dart';
+import 'package:todo_app/src/features/home/logic/get_tasks/get_tasks_cubit.dart';
 
 import 'constants.dart';
 
@@ -14,7 +19,16 @@ Future<void> initGetIt() async {
   getIt.registerLazySingleton<InternetConnectionHelper>(
       () => InternetConnectionHelper());
 
-  getIt.registerLazySingleton<TasksLogicCubit>(() => TasksLogicCubit());
+  getIt.registerLazySingleton<GetTasksCubit>(() => GetTasksCubit(getIt()));
+  getIt.registerLazySingleton<CheckBoxLogicCubit>(() => CheckBoxLogicCubit());
+
+  getIt.registerLazySingleton<WebServices>(
+      () => WebServices(createAndSetupDio()));
+  getIt.registerLazySingleton<ToDoApiHandler>(() => ToDoApiHandler(getIt()));
+  getIt.registerLazySingleton<ToDoDBService>(() => ToDoDBService());
+
+  getIt.registerLazySingleton<ToDoRepository>(
+      () => ToDoRepository(dbService: getIt(), toDoApiHandler: getIt()));
 
   // await Hive.initFlutter();
   // getIt.registerLazySingleton<HomeDBService>(() => HomeDBService());

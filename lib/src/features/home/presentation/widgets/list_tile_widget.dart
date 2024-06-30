@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
+import 'package:todo_app/src/core/resources/constants.dart';
 import 'package:todo_app/src/core/resources/font_manager.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/check_box.dart';
 
 class ListTileWidget extends StatefulWidget {
   const ListTileWidget({
@@ -28,7 +31,7 @@ class _ListTileWidgetState extends State<ListTileWidget> {
           "model": widget.model,
         });
       },
-      leading: _checkbox(),
+      leading: CheckBoxWidget(model: widget.model),
       title: Text(widget.model.title ?? ''),
       subtitle: _desc(),
       trailing: _status(),
@@ -42,12 +45,12 @@ class _ListTileWidgetState extends State<ListTileWidget> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            (widget.model.isDone ?? false)
-                ? StringsManager.doneState
-                : StringsManager.inProgressState,
+            widget.model.status ?? '',
             style: StyleManager.getMediumStyle(
               fontSize: FontSize.s16,
-              color: (widget.model.isDone ?? false)
+              color: (widget.model.status == AppConstants.taskStateDone
+                      ? true
+                      : false)
                   ? ColorManager.green
                   : ColorManager.blue,
             ),
@@ -68,22 +71,15 @@ class _ListTileWidgetState extends State<ListTileWidget> {
           style: StyleManager.getMediumStyle(),
         ),
         6.verticalSpace,
-        _time(time: "${StringsManager.createdAt} ${widget.model.createdAt}"),
+        _time(
+            time:
+                "${StringsManager.createdAt} ${DateFormat.yMd().format(DateTime.parse(widget.model.createdAt))}"),
         if (widget.model.updatedAt != null) 5.verticalSpace,
         if (widget.model.updatedAt != null)
-          _time(time: "${StringsManager.updatedAt} ${widget.model.updatedAt}"),
+          _time(
+              time:
+                  "${StringsManager.updatedAt} ${DateFormat.yMd().format(DateTime.parse(widget.model.updatedAt!))}"),
       ],
-    );
-  }
-
-  Widget _checkbox() {
-    return Checkbox(
-      value: widget.model.isDone ?? false,
-      onChanged: (value) {
-        setState(() {
-          widget.model.isDone = value!;
-        });
-      },
     );
   }
 

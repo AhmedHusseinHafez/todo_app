@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
+import 'package:todo_app/src/core/resources/route_manager.dart';
+import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/list_tile_widget.dart';
@@ -16,17 +18,19 @@ class HomeListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      padding: EdgeInsets.only(bottom: AppPadding.p12.h),
       itemBuilder: (context, index) => Dismissible(
         direction: DismissDirection.endToStart,
-        key: Key(list[index].id!),
+        key: Key(list[index].id),
         onDismissed: (direction) {
-          // setState(() {
-          //   list.removeAt(index);
-          // });
+          list[index].delete();
+          RouteGenerator.getTasksCubit.getTasks();
 
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text('Task dismissed')),
-          // );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                duration: const Duration(milliseconds: 200),
+                content: Text('${StringsManager.delete} ${list[index].title}')),
+          );
         },
         background: _deleteWidget(),
         child: _card(context, index),

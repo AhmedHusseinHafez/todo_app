@@ -15,8 +15,7 @@ class StringsManager {
   static String homeHeadLine = "Ready to do your\nDaily Tasks??";
   static String today = "Today's";
 
-  static String doneState = "Done";
-  static String inProgressState = "In Progress";
+  static String taskStatus = "Status";
   static String upDateTask = "Update Task";
   static String createNewTask = "Create New Task";
 
@@ -29,4 +28,10 @@ class StringsManager {
   static String descRequired = "Description is required";
 
   static String titleRequired = "Title is required";
+
+  static String taskCreated = "Task Created";
+  static String taskUpdated = "Task Updated";
+  static String taskDeleted = "Task Deleted";
+  static String delete = "Delete";
+  static String isTaskCompleted = "Is Task Completed?";
 }

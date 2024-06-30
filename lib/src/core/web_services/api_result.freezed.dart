@@ -20,21 +20,21 @@ mixin _$ApiResult<T> {
   TResult when<TResult extends Object?>({
     required TResult Function(T data) success,
     required TResult Function(DioExceptionTypes networkExceptions) failure,
-    required TResult Function(String error) failureMsg,
+    required TResult Function(String error) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(T data)? success,
     TResult? Function(DioExceptionTypes networkExceptions)? failure,
-    TResult? Function(String error)? failureMsg,
+    TResult? Function(String error)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? success,
     TResult Function(DioExceptionTypes networkExceptions)? failure,
-    TResult Function(String error)? failureMsg,
+    TResult Function(String error)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -42,21 +42,21 @@ mixin _$ApiResult<T> {
   TResult map<TResult extends Object?>({
     required TResult Function(Success<T> value) success,
     required TResult Function(Failure<T> value) failure,
-    required TResult Function(FailureMsg<T> value) failureMsg,
+    required TResult Function(Error<T> value) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Success<T> value)? success,
     TResult? Function(Failure<T> value)? failure,
-    TResult? Function(FailureMsg<T> value)? failureMsg,
+    TResult? Function(Error<T> value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Success<T> value)? success,
     TResult Function(Failure<T> value)? failure,
-    TResult Function(FailureMsg<T> value)? failureMsg,
+    TResult Function(Error<T> value)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -147,7 +147,7 @@ class _$SuccessImpl<T> implements Success<T> {
   TResult when<TResult extends Object?>({
     required TResult Function(T data) success,
     required TResult Function(DioExceptionTypes networkExceptions) failure,
-    required TResult Function(String error) failureMsg,
+    required TResult Function(String error) error,
   }) {
     return success(data);
   }
@@ -157,7 +157,7 @@ class _$SuccessImpl<T> implements Success<T> {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(T data)? success,
     TResult? Function(DioExceptionTypes networkExceptions)? failure,
-    TResult? Function(String error)? failureMsg,
+    TResult? Function(String error)? error,
   }) {
     return success?.call(data);
   }
@@ -167,7 +167,7 @@ class _$SuccessImpl<T> implements Success<T> {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? success,
     TResult Function(DioExceptionTypes networkExceptions)? failure,
-    TResult Function(String error)? failureMsg,
+    TResult Function(String error)? error,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -181,7 +181,7 @@ class _$SuccessImpl<T> implements Success<T> {
   TResult map<TResult extends Object?>({
     required TResult Function(Success<T> value) success,
     required TResult Function(Failure<T> value) failure,
-    required TResult Function(FailureMsg<T> value) failureMsg,
+    required TResult Function(Error<T> value) error,
   }) {
     return success(this);
   }
@@ -191,7 +191,7 @@ class _$SuccessImpl<T> implements Success<T> {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Success<T> value)? success,
     TResult? Function(Failure<T> value)? failure,
-    TResult? Function(FailureMsg<T> value)? failureMsg,
+    TResult? Function(Error<T> value)? error,
   }) {
     return success?.call(this);
   }
@@ -201,7 +201,7 @@ class _$SuccessImpl<T> implements Success<T> {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Success<T> value)? success,
     TResult Function(Failure<T> value)? failure,
-    TResult Function(FailureMsg<T> value)? failureMsg,
+    TResult Function(Error<T> value)? error,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -297,7 +297,7 @@ class _$FailureImpl<T> implements Failure<T> {
   TResult when<TResult extends Object?>({
     required TResult Function(T data) success,
     required TResult Function(DioExceptionTypes networkExceptions) failure,
-    required TResult Function(String error) failureMsg,
+    required TResult Function(String error) error,
   }) {
     return failure(networkExceptions);
   }
@@ -307,7 +307,7 @@ class _$FailureImpl<T> implements Failure<T> {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(T data)? success,
     TResult? Function(DioExceptionTypes networkExceptions)? failure,
-    TResult? Function(String error)? failureMsg,
+    TResult? Function(String error)? error,
   }) {
     return failure?.call(networkExceptions);
   }
@@ -317,7 +317,7 @@ class _$FailureImpl<T> implements Failure<T> {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? success,
     TResult Function(DioExceptionTypes networkExceptions)? failure,
-    TResult Function(String error)? failureMsg,
+    TResult Function(String error)? error,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -331,7 +331,7 @@ class _$FailureImpl<T> implements Failure<T> {
   TResult map<TResult extends Object?>({
     required TResult Function(Success<T> value) success,
     required TResult Function(Failure<T> value) failure,
-    required TResult Function(FailureMsg<T> value) failureMsg,
+    required TResult Function(Error<T> value) error,
   }) {
     return failure(this);
   }
@@ -341,7 +341,7 @@ class _$FailureImpl<T> implements Failure<T> {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Success<T> value)? success,
     TResult? Function(Failure<T> value)? failure,
-    TResult? Function(FailureMsg<T> value)? failureMsg,
+    TResult? Function(Error<T> value)? error,
   }) {
     return failure?.call(this);
   }
@@ -351,7 +351,7 @@ class _$FailureImpl<T> implements Failure<T> {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Success<T> value)? success,
     TResult Function(Failure<T> value)? failure,
-    TResult Function(FailureMsg<T> value)? failureMsg,
+    TResult Function(Error<T> value)? error,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -372,20 +372,20 @@ abstract class Failure<T> implements ApiResult<T> {
 }
 
 /// @nodoc
-abstract class _$$FailureMsgImplCopyWith<T, $Res> {
-  factory _$$FailureMsgImplCopyWith(
-          _$FailureMsgImpl<T> value, $Res Function(_$FailureMsgImpl<T>) then) =
-      __$$FailureMsgImplCopyWithImpl<T, $Res>;
+abstract class _$$ErrorImplCopyWith<T, $Res> {
+  factory _$$ErrorImplCopyWith(
+          _$ErrorImpl<T> value, $Res Function(_$ErrorImpl<T>) then) =
+      __$$ErrorImplCopyWithImpl<T, $Res>;
   @useResult
   $Res call({String error});
 }
 
 /// @nodoc
-class __$$FailureMsgImplCopyWithImpl<T, $Res>
-    extends _$ApiResultCopyWithImpl<T, $Res, _$FailureMsgImpl<T>>
-    implements _$$FailureMsgImplCopyWith<T, $Res> {
-  __$$FailureMsgImplCopyWithImpl(
-      _$FailureMsgImpl<T> _value, $Res Function(_$FailureMsgImpl<T>) _then)
+class __$$ErrorImplCopyWithImpl<T, $Res>
+    extends _$ApiResultCopyWithImpl<T, $Res, _$ErrorImpl<T>>
+    implements _$$ErrorImplCopyWith<T, $Res> {
+  __$$ErrorImplCopyWithImpl(
+      _$ErrorImpl<T> _value, $Res Function(_$ErrorImpl<T>) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -393,7 +393,7 @@ class __$$FailureMsgImplCopyWithImpl<T, $Res>
   $Res call({
     Object? error = null,
   }) {
-    return _then(_$FailureMsgImpl<T>(
+    return _then(_$ErrorImpl<T>(
       null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -404,22 +404,22 @@ class __$$FailureMsgImplCopyWithImpl<T, $Res>
 
 /// @nodoc
 
-class _$FailureMsgImpl<T> implements FailureMsg<T> {
-  const _$FailureMsgImpl(this.error);
+class _$ErrorImpl<T> implements Error<T> {
+  const _$ErrorImpl(this.error);
 
   @override
   final String error;
 
   @override
   String toString() {
-    return 'ApiResult<$T>.failureMsg(error: $error)';
+    return 'ApiResult<$T>.error(error: $error)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FailureMsgImpl<T> &&
+            other is _$ErrorImpl<T> &&
             (identical(other.error, error) || other.error == error));
   }
 
@@ -429,17 +429,17 @@ class _$FailureMsgImpl<T> implements FailureMsg<T> {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$FailureMsgImplCopyWith<T, _$FailureMsgImpl<T>> get copyWith =>
-      __$$FailureMsgImplCopyWithImpl<T, _$FailureMsgImpl<T>>(this, _$identity);
+  _$$ErrorImplCopyWith<T, _$ErrorImpl<T>> get copyWith =>
+      __$$ErrorImplCopyWithImpl<T, _$ErrorImpl<T>>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(T data) success,
     required TResult Function(DioExceptionTypes networkExceptions) failure,
-    required TResult Function(String error) failureMsg,
+    required TResult Function(String error) error,
   }) {
-    return failureMsg(error);
+    return error(this.error);
   }
 
   @override
@@ -447,9 +447,9 @@ class _$FailureMsgImpl<T> implements FailureMsg<T> {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(T data)? success,
     TResult? Function(DioExceptionTypes networkExceptions)? failure,
-    TResult? Function(String error)? failureMsg,
+    TResult? Function(String error)? error,
   }) {
-    return failureMsg?.call(error);
+    return error?.call(this.error);
   }
 
   @override
@@ -457,11 +457,11 @@ class _$FailureMsgImpl<T> implements FailureMsg<T> {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? success,
     TResult Function(DioExceptionTypes networkExceptions)? failure,
-    TResult Function(String error)? failureMsg,
+    TResult Function(String error)? error,
     required TResult orElse(),
   }) {
-    if (failureMsg != null) {
-      return failureMsg(error);
+    if (error != null) {
+      return error(this.error);
     }
     return orElse();
   }
@@ -471,9 +471,9 @@ class _$FailureMsgImpl<T> implements FailureMsg<T> {
   TResult map<TResult extends Object?>({
     required TResult Function(Success<T> value) success,
     required TResult Function(Failure<T> value) failure,
-    required TResult Function(FailureMsg<T> value) failureMsg,
+    required TResult Function(Error<T> value) error,
   }) {
-    return failureMsg(this);
+    return error(this);
   }
 
   @override
@@ -481,9 +481,9 @@ class _$FailureMsgImpl<T> implements FailureMsg<T> {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Success<T> value)? success,
     TResult? Function(Failure<T> value)? failure,
-    TResult? Function(FailureMsg<T> value)? failureMsg,
+    TResult? Function(Error<T> value)? error,
   }) {
-    return failureMsg?.call(this);
+    return error?.call(this);
   }
 
   @override
@@ -491,21 +491,21 @@ class _$FailureMsgImpl<T> implements FailureMsg<T> {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Success<T> value)? success,
     TResult Function(Failure<T> value)? failure,
-    TResult Function(FailureMsg<T> value)? failureMsg,
+    TResult Function(Error<T> value)? error,
     required TResult orElse(),
   }) {
-    if (failureMsg != null) {
-      return failureMsg(this);
+    if (error != null) {
+      return error(this);
     }
     return orElse();
   }
 }
 
-abstract class FailureMsg<T> implements ApiResult<T> {
-  const factory FailureMsg(final String error) = _$FailureMsgImpl<T>;
+abstract class Error<T> implements ApiResult<T> {
+  const factory Error(final String error) = _$ErrorImpl<T>;
 
   String get error;
   @JsonKey(ignore: true)
-  _$$FailureMsgImplCopyWith<T, _$FailureMsgImpl<T>> get copyWith =>
+  _$$ErrorImplCopyWith<T, _$ErrorImpl<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }

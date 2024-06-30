@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:todo_app/src/core/resources/color_manager.dart';
 import 'package:todo_app/src/core/resources/constants.dart';
+import 'package:todo_app/src/core/resources/font_manager.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
+import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/core/widgets/default_text_field.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/logic/add_task/add_task_cubit.dart';
+import 'package:todo_app/src/features/home/logic/check_box_logic_cubit/check_box_logic_cubit.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/check_box.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/text_field.dart';
 import 'package:uuid/uuid.dart';
 
@@ -31,6 +39,8 @@ class _TaskScreenState extends State<TaskScreen> {
 
   var _autoValidateMode = AutovalidateMode.disabled;
 
+  String? taskStatus;
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +53,14 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _appBar(),
-      body: _body(),
+    return PopScope(
+      onPopInvoked: (didPop) {
+        RouteGenerator.getTasksCubit.getTasks();
+      },
+      child: Scaffold(
+        appBar: _appBar(),
+        body: _body(),
+      ),
     );
   }
 
@@ -55,6 +70,55 @@ class _TaskScreenState extends State<TaskScreen> {
         (widget.model == null)
             ? StringsManager.createNewTask
             : StringsManager.upDateTask,
+      ),
+      actions: [
+        if (widget.model != null) _taskState(),
+        if (widget.model != null) _deleteTask(),
+      ],
+    );
+  }
+
+  Widget _deleteTask() {
+    return IconButton(
+      onPressed: () {
+        widget.model!.delete();
+        Navigator.of(context).pop();
+        showSuccessToast(
+          "${StringsManager.taskDeleted} ${widget.model?.title}",
+          context,
+        );
+      },
+      icon: const Icon(
+        Icons.delete_outlined,
+        color: ColorManager.red,
+      ),
+    );
+  }
+
+  Widget _taskState() {
+    return BlocProvider.value(
+      value: RouteGenerator.checkBoxLogicCubit,
+      child: BlocConsumer<CheckBoxLogicCubit, CheckBoxLogicState>(
+        listener: (context, state) {
+          state.mapOrNull(
+            buttonTriggered: (state) {
+              taskStatus = state.taskStatus;
+            },
+          );
+        },
+        builder: (context, state) {
+          return Text(
+            "${StringsManager.taskStatus}: ${taskStatus ?? widget.model!.status}",
+            style: StyleManager.getMediumStyle(
+              fontSize: FontSize.s16,
+              color: (widget.model!.status == AppConstants.taskStateDone
+                      ? true
+                      : false)
+                  ? ColorManager.green
+                  : ColorManager.blue,
+            ),
+          );
+        },
       ),
     );
   }
@@ -68,7 +132,9 @@ class _TaskScreenState extends State<TaskScreen> {
             children: [
               _form(),
               15.verticalSpace,
-              _button(),
+              if (widget.model != null) _checkbox(),
+              15.verticalSpace,
+              _buildButtonBloc(),
             ],
           ),
         ),
@@ -95,7 +161,7 @@ class _TaskScreenState extends State<TaskScreen> {
       controller: _titleCtr,
       decoration: InputDecoration(
         hintText: StringsManager.title,
-        hintStyle: StyleManager.getBoldStyle(),
+        hintStyle: StyleManager.getBoldStyle(fontSize: FontSize.s18),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -119,23 +185,63 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  Widget _button({bool isLoading = false}) {
+  Widget _checkbox() {
+    return Row(
+      children: [
+        CheckBoxWidget(model: widget.model!),
+        Text(StringsManager.isTaskCompleted),
+      ],
+    );
+  }
+
+  Widget _buildButtonBloc() {
+    return BlocBuilder<AddTaskCubit, AddTaskState>(
+      builder: (context, state) {
+        state.mapOrNull(
+          createTaskSuccess: (_) {
+            showSuccessToast(StringsManager.taskCreated, context);
+          },
+          createTaskError: (state) {
+            showErrorToast(state.error, context);
+          },
+        );
+        return _button(
+          isLoading:
+              state == const AddTaskState.createTaskLoading() ? true : false,
+        );
+      },
+    );
+  }
+
+  Widget _button({required bool isLoading}) {
     return ElevatedButton(
       onPressed: () {
         if (_formKey.currentState!.validate()) {
           if (widget.model == null) {
-            RouteGenerator.tasksLogicCubit.addTask(
-              TaskModel(
-                id: const Uuid().v1(),
-                title: _titleCtr.text,
-                description: _descCtr.text,
-                status: AppConstants.taskStateInProgress,
-                isDone: false,
-                createdAt: DateTime.now().toString(),
-                updatedAt: null,
-              ),
-            );
-          } else {}
+            context.read<AddTaskCubit>().addTask(
+                  TaskModel(
+                    id: const Uuid().v1(),
+                    title: _titleCtr.text,
+                    description: _descCtr.text,
+                    status: AppConstants.taskStateInProgress,
+                    createdAt: DateTime.now().toIso8601String(),
+                    updatedAt: DateTime.now().toIso8601String(),
+                  ),
+                );
+            _titleCtr.clear();
+            _descCtr.clear();
+            RouteGenerator.getTasksCubit.getTasks();
+          } else {
+            // try {
+            //   widget.model?.title = _titleCtr.text;
+            //   widget.model?.description = _descCtr.text;
+            //   widget.model?.updatedAt = DateTime.now().toIso8601String();
+            //   widget.model?.save();
+            //   showSuccessToast(StringsManager.taskUpdated, context);
+            // } catch (error) {
+            //   showErrorToast(error.toString(), context);
+            // }
+          }
         } else {
           _autoValidateMode = AutovalidateMode.onUserInteraction;
         }
@@ -158,6 +264,7 @@ class _TaskScreenState extends State<TaskScreen> {
   void dispose() {
     _titleCtr.dispose();
     _descCtr.dispose();
+    Fluttertoast.cancel();
     super.dispose();
   }
 }

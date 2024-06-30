@@ -23,7 +23,7 @@ class TaskTextField extends StatelessWidget {
       decoration: InputDecoration(
         errorStyle: const TextStyle(color: ColorManager.red),
         hintText: hint ?? '',
-        hintStyle: StyleManager.getBoldStyle(fontSize: FontSize.s12),
+        hintStyle: StyleManager.getBoldStyle(fontSize: FontSize.s18),
       ),
       validator: validator,
       buildCounter: (context,

@@ -4,6 +4,7 @@
         "cupertino",
         "fluttertoast",
         "screenutil",
+        "todos",
         "unfocus"
     ]
 }
