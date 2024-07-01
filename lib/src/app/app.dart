@@ -1,22 +1,69 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/theme_manager.dart';
 import 'package:todo_app/generated/l10n.dart';
+import 'package:todo_app/src/core/resources/utils.dart';
+import 'package:todo_app/src/core/web_services/connection_helper.dart';
+import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
 import '../core/resources/route_manager.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
-class MyApp extends StatelessWidget {
-  // MyApp({super.key});
-  MyApp._internal();
+ConnectivityResult? kInternetConnection;
 
-  static final MyApp _instance = MyApp._internal(); // single instance
+class MyApp extends StatefulWidget {
+  const MyApp._internal();
 
-  factory MyApp() => _instance; // factory to get single instance
+  static const MyApp _instance = MyApp._internal(); // single instance
 
+  factory MyApp() => _instance;
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final RouteGenerator routeGenerator = RouteGenerator();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        kInternetConnection =
+            await InternetConnectionHelper.checkInternetConnection();
+      case AppLifecycleState.paused:
+        kInternetConnection =
+            await InternetConnectionHelper.checkInternetConnection();
+        _syncDate();
+      default:
+    }
+  }
+
+  _syncDate() {
+    if (kInternetConnection != null) {
+      try {
+        getIt<ToDoRepository>().syncWithServer().then((value) {
+          RouteGenerator.getToDoCubit.getToDos();
+        });
+        showSuccessToast(StringsManager.toDosSyncedSuccessfully,
+            navigatorKey.currentContext!);
+      } catch (error) {
+        showErrorToast(error.toString(), navigatorKey.currentContext!);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +73,46 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       useInheritedMediaQuery: true,
       builder: (context, state) {
-        return MaterialApp(
-          title: StringsManager.appTitle,
-          navigatorKey: navigatorKey,
-          locale: const Locale('en'),
-          localizationsDelegates: const [
-            S.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: S.delegate.supportedLocales,
-          debugShowCheckedModeBanner: false,
-          onGenerateRoute: routeGenerator.getRoute,
-          theme: AppTheme.kLightTheme,
-          initialRoute: Routes.homePage,
+        return StreamBuilder<ConnectivityResult>(
+          stream: Connectivity().onConnectivityChanged,
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              kInternetConnection = snapshot.data;
+              try {
+                getIt<ToDoRepository>().syncWithServer().then((value) {
+                  RouteGenerator.getToDoCubit.getToDos();
+                });
+                showSuccessToast(
+                    StringsManager.toDosSyncedSuccessfully, context);
+              } catch (error) {
+                showErrorToast(error.toString(), context);
+              }
+            }
+            return MaterialApp(
+              title: StringsManager.appTitle,
+              navigatorKey: navigatorKey,
+              locale: const Locale('en'),
+              localizationsDelegates: const [
+                S.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: S.delegate.supportedLocales,
+              debugShowCheckedModeBanner: false,
+              onGenerateRoute: routeGenerator.getRoute,
+              theme: AppTheme.kLightTheme,
+              initialRoute: Routes.homePage,
+            );
+          },
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }

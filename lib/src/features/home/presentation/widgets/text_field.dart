@@ -4,8 +4,8 @@ import 'package:todo_app/src/core/resources/font_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
 import 'package:todo_app/src/core/widgets/default_text_field.dart';
 
-class TaskTextField extends StatelessWidget {
-  const TaskTextField({
+class ToDoTextField extends StatelessWidget {
+  const ToDoTextField({
     super.key,
     this.controller,
     this.validator,
@@ -21,10 +21,9 @@ class TaskTextField extends StatelessWidget {
       maxLines: 4,
       maxLength: 200,
       decoration: InputDecoration(
-        errorStyle: const TextStyle(color: ColorManager.black),
+        errorStyle: const TextStyle(color: ColorManager.red),
         hintText: hint ?? '',
-        hintStyle: StyleManager.getBoldStyle(fontSize: FontSize.s12),
-        alignLabelWithHint: true,
+        hintStyle: StyleManager.getBoldStyle(fontSize: FontSize.s18),
       ),
       validator: validator,
       buildCounter: (context,

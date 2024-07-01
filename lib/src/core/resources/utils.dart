@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 showErrorToast(String errorMessage, BuildContext context) {
   Fluttertoast.showToast(
     msg: errorMessage,

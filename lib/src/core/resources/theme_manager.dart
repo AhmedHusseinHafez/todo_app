@@ -12,23 +12,7 @@ mixin AppTheme implements ThemeData {
 
         //! Scaffold Color
         scaffoldBackgroundColor: ColorManager.white,
-
-        // hintColor: ColorManager.whiteWithOpacity30,
-
-        // primaryColor: ,
-        // primaryColorLight: ,
-        // primaryColorDark: ,
-        // disabledColor: ColorManager.whiteWithOpacity30,
-        // splashColor: const Color(0xffD2DBEA),
         splashFactory: InkRipple.splashFactory,
-
-        // //!Divider
-        // dividerTheme: DividerThemeData(
-        //   color: ColorManager.charcoal,
-        //   indent: 6.w,
-        //   endIndent: 6.w,
-        //   thickness: 2,
-        // ),
 
         ///!App bar
         appBarTheme: AppBarTheme(
@@ -74,36 +58,17 @@ mixin AppTheme implements ThemeData {
             horizontal: AppPadding.p16.w,
             vertical: AppPadding.p16.h,
           ),
-
           filled: true,
           fillColor: ColorManager.white,
-
           hintStyle: _getTFFFontStyle(),
           labelStyle: _getTFFFontStyle(),
           errorStyle: _getTFFFontStyle(error: true),
-          //enabledBorder the border before click on field
           enabledBorder: _getTFFBorderStyle(),
-          //focusedBorder the border after click on field
           focusedBorder: _getTFFBorderStyle(color: ColorManager.primary),
           errorBorder: _getTFFBorderStyle(color: ColorManager.red),
           focusedErrorBorder: _getTFFBorderStyle(),
-          // disabledBorder: _getTFFBorderStyle(),
           border: _getTFFBorderStyle(),
-          // iconColor: ColorManager.secondary,
-          // suffixIconColor: ColorManager.secondary,
         ),
-
-        // textButtonTheme: TextButtonThemeData(
-        //   style: ButtonStyle(
-        //     backgroundColor:
-        //         const WidgetStatePropertyAll<Color>(ColorManager.transparent),
-        //     foregroundColor:
-        //         const WidgetStatePropertyAll<Color>(ColorManager.secondary),
-        //     textStyle: WidgetStatePropertyAll<TextStyle>(
-        //       StyleManager.getRegularStyle(fontSize: FontSize.s14),
-        //     ),
-        //   ),
-        // ),
 
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           iconSize: 30,
@@ -144,6 +109,10 @@ mixin AppTheme implements ThemeData {
           horizontalTitleGap: 10.w,
         ),
 
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: ColorManager.black,
+        ),
+
         ///! Checkbox Theme
         checkboxTheme: CheckboxThemeData(
           side: const BorderSide(width: 1),
@@ -182,37 +151,12 @@ mixin AppTheme implements ThemeData {
   static TextTheme _myTextTheme() {
     return TextTheme(
       headlineLarge: StyleManager.getBoldStyle(fontSize: FontSize.s30),
-      // headlineMedium: ,
-      // headlineSmall: ,
-
       bodyLarge: StyleManager.getMediumStyle(fontSize: FontSize.s20),
       bodyMedium: StyleManager.getMediumStyle(fontSize: FontSize.s16),
-      // bodySmall: ,
-
       displayLarge: StyleManager.getSemiBoldStyle(
         fontSize: FontSize.s24,
       ),
-
-      // displayMedium: StyleManager.getRegularStyle(
-      //   fontSize: FontSize.s21,
-      //   color: ColorManager.white,
-      // ),
-
-      // displaySmall: StyleManager.getRegularStyle(
-      //   fontSize: FontSize.s15,
-      //   color: ColorManager.silverGray,
-      // ),
-
-      // labelLarge: ,
-      // labelMedium: StyleManager.getMediumStyle(
-      //   color: ColorManager.charcoalGray,
-      //   fontSize: FontSize.s21,
-      // ), // For ElevatedButton
-      // labelSmall: ,
-
-      // titleLarge: ,
       titleMedium: StyleManager.getMediumStyle(fontSize: FontSize.s22),
-      // titleSmall: ,
     );
   }
 }

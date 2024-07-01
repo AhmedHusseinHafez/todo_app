@@ -9,5 +9,5 @@ abstract class ApiResult<T> with _$ApiResult<T> {
   const factory ApiResult.failure(DioExceptionTypes networkExceptions) =
       Failure<T>;
 
-  const factory ApiResult.failureMsg(String error) = FailureMsg<T>;
+  const factory ApiResult.error(String error) = Error<T>;
 }

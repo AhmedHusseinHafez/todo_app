@@ -1,13 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
-import 'package:todo_app/src/core/resources/constants.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
-
 import 'package:todo_app/src/core/resources/strings_manager.dart';
+import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
-import 'package:todo_app/src/features/home/presentation/widgets/list_tile_widget.dart';
-import 'package:todo_app/src/features/home/presentation/widgets/no_tasks_widget.dart';
+import 'package:todo_app/src/features/home/data/models/todo_model.dart';
+import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
+import 'package:todo_app/src/features/home/logic/delete_todo/cubit/delete_todo_cubit.dart';
+import 'package:todo_app/src/features/home/logic/get_todo/get_todo_cubit.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/home_list_view.dart';
+import 'package:todo_app/src/features/home/presentation/widgets/no_todo_widget.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/top_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +24,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<ToDoModel>? list;
+  @override
+  void initState() {
+    super.initState();
+    RouteGenerator.getToDoCubit.getToDos();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,46 +40,38 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  AppBar _appBar() => AppBar(title: Text(StringsManager.welcome), actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.sync,
-            color: ColorManager.black,
-          ),
+  AppBar _appBar() {
+    return AppBar(title: Text(StringsManager.welcome), actions: [
+      IconButton(
+        onPressed: () {
+          try {
+            getIt<ToDoRepository>().syncWithServer().then((value) {
+              RouteGenerator.getToDoCubit.getToDos();
+            });
+            showSuccessToast(StringsManager.toDosSyncedSuccessfully, context);
+          } catch (error) {
+            showErrorToast(error.toString(), context);
+          }
+        },
+        icon: const Icon(
+          Icons.sync,
+          color: ColorManager.black,
         ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.delete_outline,
-            color: ColorManager.red,
-          ),
-        ),
-      ]);
-
-  Widget _floatingActionButton(BuildContext context) {
-    return FloatingActionButton(
-      child: const Icon(Icons.add),
-      onPressed: () {
-        Navigator.pushNamed(context, Routes.taskScreen, arguments: {
-          "model": null,
-        });
-      },
-    );
-  }
-
-  Widget _body(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppPadding.p16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _top(),
-          if (tempTasks.isEmpty) const NoTasksWidget(),
-          if (tempTasks.isNotEmpty) _list(),
-        ],
       ),
-    );
+      IconButton(
+        onPressed: () {
+          if (list != null) {
+            Navigator.pushNamed(context, Routes.trashScreen, arguments: {
+              "deletedToDos": list!.where((e) => e.isDeleted == true).toList(),
+            });
+          }
+        },
+        icon: const Icon(
+          Icons.delete_outline,
+          color: ColorManager.red,
+        ),
+      ),
+    ]);
   }
 
   Widget _top() {
@@ -82,40 +87,63 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _list() {
-    return Expanded(
-      child: ListView.separated(
-        itemBuilder: (context, index) => Dismissible(
-          direction: DismissDirection.endToStart,
-          key: Key(tempTasks[index].id!),
-          onDismissed: (direction) {
-            setState(() {
-              tempTasks.removeAt(index);
-            });
+  Widget _buildBloc() {
+    return BlocConsumer<GetToDoCubit, GetToDosState>(
+      listener: (context, state) {
+        state.mapOrNull(
+          getToDosSuccess: (state) => list = state.todos,
+          getToDosError: (state) => showErrorToast(state.error, context),
+        );
+      },
+      builder: (context, state) {
+        var filteredList =
+            list?.where((model) => model.isDeleted == false).toList();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Task dismissed')),
-            );
-          },
-          background: Container(
-            decoration: BoxDecoration(
-                color: Colors.red, borderRadius: BorderRadius.circular(10.r)),
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).listTileTheme.tileColor,
-                borderRadius: BorderRadius.circular(10.r)),
-            child: ListTileWidget(model: tempTasks[index]),
-          ),
-        ),
-        separatorBuilder: (context, index) => 12.verticalSpace,
-        itemCount: tempTasks.length,
+        if (state == const GetToDosState.getToDosLoading()) {
+          return _buildLoading();
+        } else if (filteredList != null && filteredList.isNotEmpty) {
+          return BlocProvider(
+            create: (context) => DeleteTodoCubit(getIt<ToDoRepository>()),
+            child: HomeListView(list: filteredList),
+          );
+        } else {
+          return const NoToDosWidget();
+        }
+      },
+    );
+  }
+
+  Widget _body(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppPadding.p16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _top(),
+          Expanded(child: _buildBloc()),
+        ],
       ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return Column(
+      children: [
+        0.3.sh.verticalSpace,
+        Center(child: CupertinoActivityIndicator(radius: 15.r)),
+      ],
+    );
+  }
+
+  Widget _floatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      child: const Icon(Icons.add),
+      onPressed: () {
+        Navigator.pushNamed(context, Routes.todoScreen, arguments: {
+          // model is [null] because we are [creating a new todo] in this screen and [not editing an existing one].
+          "model": null,
+        });
+      },
     );
   }
 }

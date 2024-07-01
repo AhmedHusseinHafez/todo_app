@@ -31,13 +31,6 @@ class StyleManager {
         color ?? Colors.black, height);
   }
 
-  /// light style
-  // static TextStyle getLightStyle(
-  //     {double? fontSize, Color? color, double? height}) {
-  //   return _getTextStyle(fontSize ?? FontSize.s12, FontWeightManager.light,
-  //       color ?? Colors.black, height);
-  // }
-
   /// bold style
   static TextStyle getBoldStyle(
       {double? fontSize, Color? color, double? height}) {

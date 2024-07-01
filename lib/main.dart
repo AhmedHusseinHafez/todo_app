@@ -6,11 +6,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app/src/app/app.dart';
 import 'package:todo_app/src/core/resources/bloc_observer.dart';
 import 'package:todo_app/src/core/resources/injection.dart';
+import 'package:todo_app/src/core/resources/local_helper.dart';
+import 'package:todo_app/src/core/web_services/connection_helper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Future.wait([
+    hiveInit(),
+    InternetConnectionHelper.checkInternetConnection().then(
+      (value) {
+        kInternetConnection = value;
+      },
+    ),
     initGetIt(),
     ScreenUtil.ensureScreenSize(),
     SystemChrome.setPreferredOrientations([
