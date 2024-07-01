@@ -21,13 +21,13 @@ class _WebServices implements WebServices {
   String? baseUrl;
 
   @override
-  Future<List<TaskModel>?> getToDos() async {
+  Future<List<ToDoModel>?> getToDos() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result =
-        await _dio.fetch<List<dynamic>>(_setStreamType<List<TaskModel>>(Options(
+        await _dio.fetch<List<dynamic>>(_setStreamType<List<ToDoModel>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -44,20 +44,20 @@ class _WebServices implements WebServices {
               baseUrl,
             ))));
     var value = _result.data
-        ?.map((dynamic i) => TaskModel.fromJson(i as Map<String, dynamic>))
+        ?.map((dynamic i) => ToDoModel.fromJson(i as Map<String, dynamic>))
         .toList();
     return value;
   }
 
   @override
-  Future<TaskModel?> addToDo(TaskModel taskModel) async {
+  Future<ToDoModel?> addToDo(ToDoModel toDoModel) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(taskModel.toJson());
+    _data.addAll(toDoModel.toJson());
     final _result = await _dio
-        .fetch<Map<String, dynamic>?>(_setStreamType<TaskModel>(Options(
+        .fetch<Map<String, dynamic>?>(_setStreamType<ToDoModel>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -74,22 +74,22 @@ class _WebServices implements WebServices {
               baseUrl,
             ))));
     final value =
-        _result.data == null ? null : TaskModel.fromJson(_result.data!);
+        _result.data == null ? null : ToDoModel.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<TaskModel?> updateToDo(
+  Future<ToDoModel?> updateToDo(
     String id,
-    Map<String, dynamic> taskModel,
+    Map<String, dynamic> toDoModel,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(taskModel);
+    _data.addAll(toDoModel);
     final _result = await _dio
-        .fetch<Map<String, dynamic>?>(_setStreamType<TaskModel>(Options(
+        .fetch<Map<String, dynamic>?>(_setStreamType<ToDoModel>(Options(
       method: 'PUT',
       headers: _headers,
       extra: _extra,
@@ -106,18 +106,18 @@ class _WebServices implements WebServices {
               baseUrl,
             ))));
     final value =
-        _result.data == null ? null : TaskModel.fromJson(_result.data!);
+        _result.data == null ? null : ToDoModel.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<TaskModel?> deleteToDo(String id) async {
+  Future<ToDoModel?> deleteToDo(String id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio
-        .fetch<Map<String, dynamic>?>(_setStreamType<TaskModel>(Options(
+        .fetch<Map<String, dynamic>?>(_setStreamType<ToDoModel>(Options(
       method: 'DELETE',
       headers: _headers,
       extra: _extra,
@@ -134,7 +134,7 @@ class _WebServices implements WebServices {
               baseUrl,
             ))));
     final value =
-        _result.data == null ? null : TaskModel.fromJson(_result.data!);
+        _result.data == null ? null : ToDoModel.fromJson(_result.data!);
     return value;
   }
 

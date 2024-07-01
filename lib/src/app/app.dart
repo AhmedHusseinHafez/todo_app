@@ -2,12 +2,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/theme_manager.dart';
 import 'package:todo_app/generated/l10n.dart';
 import 'package:todo_app/src/core/web_services/connection_helper.dart';
-import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
 import '../core/resources/route_manager.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();

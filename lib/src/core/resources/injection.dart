@@ -7,7 +7,7 @@ import 'package:todo_app/src/core/web_services/web_services.dart';
 import 'package:todo_app/src/features/home/data/local_data_source/todo_db_service.dart';
 import 'package:todo_app/src/features/home/data/remote_data_source/remote_data_source.dart';
 import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
-import 'package:todo_app/src/features/home/logic/get_tasks/get_tasks_cubit.dart';
+import 'package:todo_app/src/features/home/logic/get_todo/get_todo_cubit.dart';
 
 import 'constants.dart';
 
@@ -18,7 +18,7 @@ Future<void> initGetIt() async {
   getIt.registerLazySingleton<InternetConnectionHelper>(
       () => InternetConnectionHelper());
 
-  getIt.registerLazySingleton<GetTasksCubit>(() => GetTasksCubit(getIt()));
+  getIt.registerLazySingleton<GetToDoCubit>(() => GetToDoCubit(getIt()));
 
   getIt.registerLazySingleton<WebServices>(
       () => WebServices(createAndSetupDio()));

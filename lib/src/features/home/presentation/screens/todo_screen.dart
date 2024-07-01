@@ -12,26 +12,27 @@ import 'package:todo_app/src/core/resources/style_manager.dart';
 import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/core/widgets/default_text_field.dart';
-import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/data/models/todo_model.dart';
 import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
-import 'package:todo_app/src/features/home/logic/add_task/add_task_cubit.dart';
-import 'package:todo_app/src/features/home/logic/update_task/update_task_cubit.dart';
+import 'package:todo_app/src/features/home/logic/add_todo/add_todo_cubit.dart';
+import 'package:todo_app/src/features/home/logic/delete_todo/cubit/delete_todo_cubit.dart';
+import 'package:todo_app/src/features/home/logic/update_todo/update_todo_cubit.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/text_field.dart';
 import 'package:uuid/uuid.dart';
 
-class TaskScreen extends StatefulWidget {
-  const TaskScreen({
+class ToDoScreen extends StatefulWidget {
+  const ToDoScreen({
     super.key,
     this.model,
   });
 
-  final TaskModel? model;
+  final ToDoModel? model;
 
   @override
-  State<TaskScreen> createState() => _TaskScreenState();
+  State<ToDoScreen> createState() => _ToDoScreenState();
 }
 
-class _TaskScreenState extends State<TaskScreen> {
+class _ToDoScreenState extends State<ToDoScreen> {
   late final TextEditingController _titleCtr;
 
   late final TextEditingController _descCtr;
@@ -40,7 +41,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   var _autoValidateMode = AutovalidateMode.disabled;
 
-  bool? taskStatusValue;
+  bool? todoStatusValue;
 
   @override
   void initState() {
@@ -56,7 +57,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
-        RouteGenerator.getTasksCubit.getTasks();
+        RouteGenerator.getToDoCubit.getToDos();
       },
       child: Scaffold(
         appBar: _appBar(),
@@ -69,8 +70,8 @@ class _TaskScreenState extends State<TaskScreen> {
     return AppBar(
       title: Text(
         (widget.model == null)
-            ? StringsManager.createNewTask
-            : StringsManager.upDateTask,
+            ? StringsManager.createNewToDo
+            : StringsManager.upDateToDo,
       ),
       actions: [
         if (widget.model != null) _taskState(),
@@ -80,29 +81,41 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   Widget _deleteTask() {
-    return IconButton(
-      onPressed: () {
-        widget.model!.delete();
-        Navigator.of(context).pop();
-        showSuccessToast(
-          "${StringsManager.taskDeleted} ${widget.model?.title}",
-          context,
-        );
-      },
-      icon: const Icon(
-        Icons.delete_outlined,
-        color: ColorManager.red,
+    return BlocProvider(
+      create: (context) => DeleteTodoCubit(getIt<ToDoRepository>()),
+      child: BlocConsumer<DeleteTodoCubit, DeleteTodoState>(
+        listener: (context, state) {
+          state.mapOrNull(
+            success: (_) {
+              showSuccessToast(StringsManager.toDoMovedToTrash, context);
+            },
+            failure: (state) {
+              showErrorToast(state.error, context);
+            },
+          );
+        },
+        builder: (context, state) {
+          return IconButton(
+            onPressed: () {
+              context.read<DeleteTodoCubit>().deleteTodo(id: widget.model!.id);
+            },
+            icon: const Icon(
+              Icons.delete_outlined,
+              color: ColorManager.red,
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _taskState() {
     return Text(
-      "${StringsManager.taskStatus}: ${_taskStatus(taskStatusValue: taskStatusValue)}",
+      "${StringsManager.toDoStatus}: ${_taskStatus(taskStatusValue: todoStatusValue)}",
       style: StyleManager.getMediumStyle(
         fontSize: FontSize.s16,
         color: _taskStatusValue(
-                taskStatus: _taskStatus(taskStatusValue: taskStatusValue))
+                taskStatus: _taskStatus(taskStatusValue: todoStatusValue))
             ? ColorManager.green
             : ColorManager.blue,
       ),
@@ -111,21 +124,21 @@ class _TaskScreenState extends State<TaskScreen> {
 
   String _taskStatus({bool? taskStatusValue}) {
     if (taskStatusValue == true) {
-      return AppConstants.taskStateDone;
+      return AppConstants.toDoStateDone;
     } else if (taskStatusValue == false) {
-      return AppConstants.taskStateInProgress;
+      return AppConstants.toDoStateInProgress;
     } else {
       return widget.model!.status!;
     }
   }
 
   bool _taskStatusValue({required String taskStatus}) {
-    if (taskStatus == AppConstants.taskStateDone) {
+    if (taskStatus == AppConstants.toDoStateDone) {
       return true;
-    } else if (taskStatus == AppConstants.taskStateInProgress) {
+    } else if (taskStatus == AppConstants.toDoStateInProgress) {
       return false;
     } else {
-      return widget.model!.status == AppConstants.taskStateDone ? true : false;
+      return widget.model!.status == AppConstants.toDoStateDone ? true : false;
     }
   }
 
@@ -180,7 +193,7 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   Widget _desc() {
-    return TaskTextField(
+    return ToDoTextField(
       hint: StringsManager.description,
       controller: _descCtr,
       validator: (value) {
@@ -196,31 +209,31 @@ class _TaskScreenState extends State<TaskScreen> {
     return Row(
       children: [
         Checkbox(
-          value: taskStatusValue ??
-                  widget.model?.status == AppConstants.taskStateDone
+          value: todoStatusValue ??
+                  widget.model?.status == AppConstants.toDoStateDone
               ? true
               : false,
           onChanged: (value) {
             setState(() {
-              taskStatusValue = value!;
+              todoStatusValue = value!;
             });
           },
         ),
-        Text(StringsManager.isTaskCompleted),
+        Text(StringsManager.isToDoCompleted),
       ],
     );
   }
 
   Widget _buildAddTask() {
     return BlocProvider(
-      create: (context) => AddTaskCubit(getIt<ToDoRepository>()),
-      child: BlocConsumer<AddTaskCubit, AddTaskState>(
+      create: (context) => AddToDoCubit(getIt<ToDoRepository>()),
+      child: BlocConsumer<AddToDoCubit, AddToDoState>(
         listener: (context, state) {
           state.mapOrNull(
-            createTaskSuccess: (_) {
-              showSuccessToast(StringsManager.taskCreated, context);
+            createToDoSuccess: (_) {
+              showSuccessToast(StringsManager.toDoCreated, context);
             },
-            createTaskError: (state) {
+            createToDoError: (state) {
               showErrorToast(state.error, context);
             },
           );
@@ -228,15 +241,15 @@ class _TaskScreenState extends State<TaskScreen> {
         builder: (context, state) {
           return _button(
             isLoading:
-                state == const AddTaskState.createTaskLoading() ? true : false,
+                state == const AddToDoState.createToDoLoading() ? true : false,
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                context.read<AddTaskCubit>().addTask(
-                      TaskModel(
+                context.read<AddToDoCubit>().addToDo(
+                      ToDoModel(
                         id: const Uuid().v1(),
                         title: _titleCtr.text,
                         description: _descCtr.text,
-                        status: AppConstants.taskStateInProgress,
+                        status: AppConstants.toDoStateInProgress,
                         createdAt: DateTime.now().toIso8601String(),
                         updatedAt: DateTime.now().toIso8601String(),
                         isSynced: false,
@@ -256,12 +269,12 @@ class _TaskScreenState extends State<TaskScreen> {
 
   Widget _buildUpdateTask() {
     return BlocProvider(
-      create: (context) => UpdateTaskCubit(getIt<ToDoRepository>()),
-      child: BlocConsumer<UpdateTaskCubit, UpdateTaskState>(
+      create: (context) => UpdateToDoCubit(getIt<ToDoRepository>()),
+      child: BlocConsumer<UpdateToDoCubit, UpdateToDoState>(
         listener: (context, state) {
           state.mapOrNull(
             success: (_) {
-              showSuccessToast(StringsManager.taskUpdated, context);
+              showSuccessToast(StringsManager.toDoUpdated, context);
             },
             failure: (state) {
               showErrorToast(state.error, context);
@@ -270,23 +283,23 @@ class _TaskScreenState extends State<TaskScreen> {
         },
         builder: (context, state) {
           return _button(
-            isLoading: state == const UpdateTaskState.loading() ? true : false,
+            isLoading: state == const UpdateToDoState.loading() ? true : false,
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                var newModel = TaskModel(
+                var newModel = ToDoModel(
                   id: widget.model!.id,
                   createdAt: widget.model!.createdAt,
                   title: _titleCtr.text,
                   description: _descCtr.text,
-                  status: (taskStatusValue == true
-                      ? AppConstants.taskStateDone
-                      : (taskStatusValue == false
-                          ? AppConstants.taskStateInProgress
+                  status: (todoStatusValue == true
+                      ? AppConstants.toDoStateDone
+                      : (todoStatusValue == false
+                          ? AppConstants.toDoStateInProgress
                           : widget.model!.status)),
                   updatedAt: DateTime.now().toIso8601String(),
                   isSynced: false,
                 );
-                context.read<UpdateTaskCubit>().updateTask(
+                context.read<UpdateToDoCubit>().updateTask(
                       oldModel: widget.model!,
                       newModel: newModel,
                     );
@@ -312,8 +325,8 @@ class _TaskScreenState extends State<TaskScreen> {
             )
           : Text(
               (widget.model == null)
-                  ? StringsManager.createNewTask
-                  : StringsManager.upDateTask,
+                  ? StringsManager.createNewToDo
+                  : StringsManager.upDateToDo,
             ),
     );
   }

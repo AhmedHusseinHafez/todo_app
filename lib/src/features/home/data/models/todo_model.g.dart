@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'task_model.dart';
+part of 'todo_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TaskModelAdapter extends TypeAdapter<TaskModel> {
+class ToDoModelAdapter extends TypeAdapter<ToDoModel> {
   @override
   final int typeId = 0;
 
   @override
-  TaskModel read(BinaryReader reader) {
+  ToDoModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return TaskModel(
+    return ToDoModel(
       id: fields[0] as String,
       title: fields[1] as String?,
       description: fields[2] as String?,
@@ -24,13 +24,14 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       createdAt: fields[4] as String,
       updatedAt: fields[5] as String?,
       isSynced: fields[6] as bool?,
+      isDeleted: fields[7] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, TaskModel obj) {
+  void write(BinaryWriter writer, ToDoModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       ..writeByte(5)
       ..write(obj.updatedAt)
       ..writeByte(6)
-      ..write(obj.isSynced);
+      ..write(obj.isSynced)
+      ..writeByte(7)
+      ..write(obj.isDeleted);
   }
 
   @override
@@ -53,7 +56,7 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TaskModelAdapter &&
+      other is ToDoModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

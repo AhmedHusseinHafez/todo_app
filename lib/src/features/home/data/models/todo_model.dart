@@ -1,9 +1,9 @@
 import 'package:hive/hive.dart';
 
-part 'task_model.g.dart';
+part 'todo_model.g.dart';
 
 @HiveType(typeId: 0)
-class TaskModel extends HiveObject {
+class ToDoModel extends HiveObject {
   @HiveField(0)
   final String id;
   @HiveField(1)
@@ -20,7 +20,10 @@ class TaskModel extends HiveObject {
   @HiveField(6)
   bool? isSynced;
 
-  TaskModel({
+  @HiveField(7)
+  late bool isDeleted;
+
+  ToDoModel({
     required this.id,
     required this.title,
     required this.description,
@@ -28,10 +31,11 @@ class TaskModel extends HiveObject {
     required this.createdAt,
     this.updatedAt,
     this.isSynced = false,
+    this.isDeleted = false,
   });
 
-  factory TaskModel.fromJson(Map<String, dynamic> json) {
-    return TaskModel(
+  factory ToDoModel.fromJson(Map<String, dynamic> json) {
+    return ToDoModel(
       id: json['id'],
       title: json['title'],
       description: json['description'],
@@ -54,7 +58,7 @@ class TaskModel extends HiveObject {
     };
   }
 
-  TaskModel copyWith({
+  ToDoModel copyWith({
     String? id,
     String? title,
     String? description,
@@ -63,7 +67,7 @@ class TaskModel extends HiveObject {
     String? updatedAt,
     bool? isSynced,
   }) {
-    return TaskModel(
+    return ToDoModel(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,

@@ -1,85 +1,53 @@
 import 'package:hive/hive.dart';
-import 'package:todo_app/src/core/resources/common.dart';
 import 'package:todo_app/src/core/resources/constants.dart';
-import 'package:todo_app/src/core/resources/error_strings.dart';
-import 'package:todo_app/src/core/web_services/api_result.dart';
-import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/data/models/todo_model.dart';
 
 class ToDoDBService {
   ///box key
-  static const String _key = AppConstants.kTasksBox;
+  static const String _key = AppConstants.kToDoBox;
 
-  final _tasksBox = Hive.box<TaskModel>(_key);
+  final _toDoBox = Hive.box<ToDoModel>(_key);
 
-  Future<List<TaskModel>?> getAllToDos() async {
-    try {
-      if (_tasksBox.isOpen && _tasksBox.isNotEmpty) {
-        return _tasksBox.values.toList();
-      } else {
-        return null;
-      }
-    } catch (e) {
-      // Handle read errors
-      logger.e('${ErrorStrings.kReadError} $e');
+  /// Get all ToDos from local database
+  Future<List<ToDoModel>?> getAllToDos() async {
+    if (_toDoBox.isOpen && _toDoBox.isNotEmpty) {
+      return _toDoBox.values.toList();
     }
-
     return null;
   }
 
-  Future<void> addAllToDos({required List<TaskModel> list}) async {
-    try {
-      await _tasksBox.addAll(list);
-    } catch (e) {
-      // Handle insertion errors
-      logger.e('${ErrorStrings.kInsertError} $e');
-    }
+  /// Add ToDos to local database [ToDo Box]
+  Future<int> addToDos({required ToDoModel toDo}) async {
+    return await _toDoBox.add(toDo);
   }
 
-  Future<ApiResult> addToDos({required TaskModel task}) async {
-    try {
-      var response = await _tasksBox.add(task);
-      return ApiResult.success(response);
-    } catch (e) {
-      // Handle insertion errors
-      logger.e('${ErrorStrings.kInsertError} $e');
-      return ApiResult.error('${ErrorStrings.kInsertError} $e');
-    }
+  Future<void> updateToDo({required ToDoModel toDo}) async {
+    await toDo.save();
   }
 
-  Future<void> deleteToDo({required int id}) async {
-    try {
-      await _tasksBox.delete(id);
-    } catch (e) {
-      // Handle deletion errors
-      logger.e('${ErrorStrings.kDeleteError} $e');
+  Future<ToDoModel?> findById({required String id}) async {
+    var data = await getAllToDos();
+
+    if (data != null) {
+      for (var toDo in data) {
+        if (toDo.id == id) {
+          return toDo;
+        }
+      }
     }
+    return null;
   }
 
-  Future<void> updateToDo({required TaskModel task}) async {
-    try {
-      return await task.save();
-    } catch (e) {
-      // Handle deletion errors
-      logger.e('${ErrorStrings.kUpdateError} $e');
-    }
-  }
+  Future<ToDoModel?> markAsDeleted({required String id}) async {
+    var data = await findById(id: id);
 
-  Future<dynamic> clearAllToDos() async {
-    try {
-      return await _tasksBox.clear();
-    } catch (e) {
-      // Handle deletion errors
-      logger.e('${ErrorStrings.kDeleteError} $e');
+    if (data != null) {
+      data.isDeleted = true;
+      data.isSynced = false;
+      data.updatedAt = DateTime.now().toIso8601String();
+      await data.save();
+      return data;
     }
-  }
-
-  Future<bool> isDataAvailable() async {
-    try {
-      return _tasksBox.isEmpty;
-    } catch (e) {
-      // Handle error checking box emptiness
-      logger.e('${ErrorStrings.kEmptyBox} $e');
-      return true; // Return true assuming it's empty on error
-    }
+    return null;
   }
 }

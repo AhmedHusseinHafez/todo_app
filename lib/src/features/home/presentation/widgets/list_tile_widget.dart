@@ -7,7 +7,7 @@ import 'package:todo_app/src/core/resources/font_manager.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
-import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/data/models/todo_model.dart';
 
 class ListTileWidget extends StatefulWidget {
   const ListTileWidget({
@@ -15,7 +15,7 @@ class ListTileWidget extends StatefulWidget {
     required this.model,
   });
 
-  final TaskModel model;
+  final ToDoModel model;
 
   @override
   State<ListTileWidget> createState() => _ListTileWidgetState();
@@ -26,7 +26,7 @@ class _ListTileWidgetState extends State<ListTileWidget> {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        Navigator.pushNamed(context, Routes.taskScreen, arguments: {
+        Navigator.pushNamed(context, Routes.todoScreen, arguments: {
           "model": widget.model,
         });
       },
@@ -46,7 +46,7 @@ class _ListTileWidgetState extends State<ListTileWidget> {
             widget.model.status ?? '',
             style: StyleManager.getMediumStyle(
               fontSize: FontSize.s16,
-              color: (widget.model.status == AppConstants.taskStateDone
+              color: (widget.model.status == AppConstants.toDoStateDone
                       ? true
                       : false)
                   ? ColorManager.green

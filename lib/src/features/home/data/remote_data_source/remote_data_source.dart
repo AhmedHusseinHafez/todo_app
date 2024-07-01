@@ -1,24 +1,24 @@
 import 'package:todo_app/src/core/web_services/web_services.dart';
-import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/data/models/todo_model.dart';
 
 class ToDoApiHandler {
   final WebServices _webServices;
 
   ToDoApiHandler(this._webServices);
 
-  Future<List<TaskModel>?> getToDos() async {
+  Future<List<ToDoModel>?> getToDos() async {
     return await _webServices.getToDos();
   }
 
-  Future<TaskModel?> deleteToDo(String id) async {
+  Future<ToDoModel?> deleteToDo(String id) async {
     return await _webServices.deleteToDo(id);
   }
 
-  Future<TaskModel?> addToDo(TaskModel task) async {
-    return await _webServices.addToDo(task);
+  Future<ToDoModel?> addToDo(ToDoModel todo) async {
+    return await _webServices.addToDo(todo);
   }
 
-  Future<TaskModel?> updateToDo(String id, TaskModel taskModel) async {
-    return await _webServices.updateToDo(id, taskModel.toJson());
+  Future<ToDoModel?> updateToDo(String id, ToDoModel toDoModel) async {
+    return await _webServices.updateToDo(id, toDoModel.toJson());
   }
 }

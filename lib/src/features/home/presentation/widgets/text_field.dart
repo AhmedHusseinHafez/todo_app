@@ -4,8 +4,8 @@ import 'package:todo_app/src/core/resources/font_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
 import 'package:todo_app/src/core/widgets/default_text_field.dart';
 
-class TaskTextField extends StatelessWidget {
-  const TaskTextField({
+class ToDoTextField extends StatelessWidget {
+  const ToDoTextField({
     super.key,
     this.controller,
     this.validator,

@@ -10,14 +10,14 @@ class StringsManager {
   static String noRouteFound = "No Route Found";
   static String anErrorOccurred = "An Error Occurred";
 
-  static String noTasksFound = "No Tasks Found";
+  static String noToDosFound = "No ToDos Found";
 
-  static String homeHeadLine = "Ready to do your\nDaily Tasks??";
+  static String homeHeadLine = "Ready to do your\nDaily ToDos??";
   static String today = "Today's";
 
-  static String taskStatus = "Status";
-  static String upDateTask = "Update Task";
-  static String createNewTask = "Create New Task";
+  static String toDoStatus = "Status";
+  static String upDateToDo = "Update ToDo";
+  static String createNewToDo = "Create New ToDo";
 
   static String updatedAt = "Updated At:";
   static String createdAt = "Created At:";
@@ -29,11 +29,16 @@ class StringsManager {
 
   static String titleRequired = "Title is required";
 
-  static String taskCreated = "Task Created";
-  static String taskUpdated = "Task Updated";
-  static String taskDeleted = "Task Deleted";
+  static String toDoCreated = "ToDo Created";
+  static String toDoUpdated = "ToDo Updated";
+  static String toDoMovedToTrash = "ToDo Moved To Trash";
+  static String toDoMarkedDeleted = "ToDo Marked Deleted";
   static String delete = "Delete";
-  static String isTaskCompleted = "Is Task Completed?";
+  static String isToDoCompleted = "Is ToDo Completed?";
   //isSynced
   static String isSynced = "Is Synced?";
+
+  static String pendingDeleteToDos = "Pending To-Dos marked deleted";
+
+  static String toDosSyncedSuccessfully = "ToDos synced successfully";
 }
