@@ -1,7 +1,9 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:todo_app/src/app/app.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
 import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
@@ -45,10 +47,13 @@ class _HomePageState extends State<HomePage> {
       IconButton(
         onPressed: () {
           try {
-            getIt<ToDoRepository>().syncWithServer().then((value) {
-              RouteGenerator.getToDoCubit.getToDos();
-            });
-            showSuccessToast(StringsManager.toDosSyncedSuccessfully, context);
+            if (kInternetConnection != null &&
+                kInternetConnection != ConnectivityResult.none) {
+              getIt<ToDoRepository>().syncWithServer().then((value) {
+                RouteGenerator.getToDoCubit.getToDos();
+              });
+              showSuccessToast(StringsManager.toDosSyncedSuccessfully, context);
+            }
           } catch (error) {
             showErrorToast(error.toString(), context);
           }

@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String domain = 'http://10.0.2.2:3000';
+  static const String domain = 'http://localhost:3000';
   static const String kToDoBox = 'todo_box';
 
   static const String toDoStateDone = 'Done';

@@ -5,6 +5,7 @@
         "fluttertoast",
         "screenutil",
         "todos",
-        "unfocus"
+        "unfocus",
+        "webservice"
     ]
 }

@@ -41,9 +41,6 @@ dependencies:
   retrofit: ^4.0.3
   retrofit_generator: ^8.1.0
   dio: ^5.3.3
-  dio_cache_interceptor: ^3.4.4
-  dio_cookie_manager: ^3.1.1
-  dio_http2_adapter: ^2.3.1+1
   dio_smart_retry: ^6.0.0
   connectivity_plus: ^5.0.2
 
@@ -53,9 +50,6 @@ dependencies:
   fluttertoast: ^8.2.2
 
   #Others
-  path_provider: ^2.1.2
-  path: ^1.8.0
-  crypto: ^3.0.3
   logger: ^2.1.0
   uuid: ^4.4.0
 
