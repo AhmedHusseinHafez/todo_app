@@ -35,10 +35,17 @@ class StringsManager {
   static String toDoMarkedDeleted = "ToDo Marked Deleted";
   static String delete = "Delete";
   static String isToDoCompleted = "Is ToDo Completed?";
-  //isSynced
   static String isSynced = "Is Synced?";
 
-  static String pendingDeleteToDos = "Pending To-Dos marked deleted";
+  static String trash = "Trash";
 
   static String toDosSyncedSuccessfully = "ToDos synced successfully";
+
+  static String note =
+      "Note: This Data will disappear after sync with internet.";
+
+  static String pending = "pending";
+  static String synced = "synced";
+  static String failed = "failed";
+  static String state = "state";
 }

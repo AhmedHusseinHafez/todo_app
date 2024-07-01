@@ -2,10 +2,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/theme_manager.dart';
 import 'package:todo_app/generated/l10n.dart';
+import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/web_services/connection_helper.dart';
+import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
 import '../core/resources/route_manager.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -36,11 +39,28 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.resumed) {
-      kInternetConnection =
-          await InternetConnectionHelper.checkInternetConnection();
-      if (kInternetConnection != null) {
-        // getIt<ToDoRepository>().syncWithServer();
+    switch (state) {
+      case AppLifecycleState.resumed:
+        kInternetConnection =
+            await InternetConnectionHelper.checkInternetConnection();
+      case AppLifecycleState.paused:
+        kInternetConnection =
+            await InternetConnectionHelper.checkInternetConnection();
+        _syncDate();
+      default:
+    }
+  }
+
+  _syncDate() {
+    if (kInternetConnection != null) {
+      try {
+        getIt<ToDoRepository>().syncWithServer().then((value) {
+          RouteGenerator.getToDoCubit.getToDos();
+        });
+        showSuccessToast(StringsManager.toDosSyncedSuccessfully,
+            navigatorKey.currentContext!);
+      } catch (error) {
+        showErrorToast(error.toString(), navigatorKey.currentContext!);
       }
     }
   }
@@ -58,7 +78,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           builder: (context, snapshot) {
             if (snapshot.data != null) {
               kInternetConnection = snapshot.data;
-              // getIt<ToDoRepository>().syncWithServer();
+              try {
+                getIt<ToDoRepository>().syncWithServer().then((value) {
+                  RouteGenerator.getToDoCubit.getToDos();
+                });
+                showSuccessToast(
+                    StringsManager.toDosSyncedSuccessfully, context);
+              } catch (error) {
+                showErrorToast(error.toString(), context);
+              }
             }
             return MaterialApp(
               title: StringsManager.appTitle,

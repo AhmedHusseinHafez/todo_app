@@ -41,12 +41,7 @@ class ToDoRepository {
         var remoteToDos = await _toDoApiHandler.getToDos();
         await mergeToDos(remoteToDo: remoteToDos ?? []);
         final cachedToDos = await _dbService.getAllToDos();
-        if (cachedToDos != null) {
-          return ApiResult.success(cachedToDos);
-        } else {
-          return const ApiResult.error(
-              "${ErrorStrings.kReadError} Maybe [ToDoBox] empty or closed");
-        }
+        return ApiResult.success(cachedToDos);
       } catch (_) {
         // Failure (Unknown Error) - Connection is okay
         try {

@@ -27,42 +27,13 @@ Future<void> initGetIt() async {
 
   getIt.registerLazySingleton<ToDoRepository>(
       () => ToDoRepository(dbService: getIt(), toDoApiHandler: getIt()));
-
-  // await Hive.initFlutter();
-  // getIt.registerLazySingleton<HomeDBService>(() => HomeDBService());
-  // await getIt<HomeDBService>().initDataBase();
-
-  // getIt.registerLazySingleton<WebServices>(
-  //   () => WebServices(createAndSetupDio()),
-  // );
-  // getIt.registerLazySingleton<HomeDataBaseProvider>(
-  //   () => HomeDataBaseProvider(homeDataBaseService: getIt()),
-  // );
-
-  // // getIt.registerLazySingleton<HomeRemoteProvider>(
-  // //   () => HomeRemoteProvider(webServices: getIt()),
-  // // );
-
-  // getIt.registerLazySingleton<HomeRepository>(
-  //   () => HomeRepository(dbProvider: getIt(), webServices: getIt()),
-  // );
-  // getIt.registerLazySingleton<NavBarCubit>(() => NavBarCubit());
-  // getIt.registerLazySingleton<HomeLogicCubit>(() => HomeLogicCubit(getIt()));
 }
 
 Dio createAndSetupDio() {
   dio
-        ..options.connectTimeout = const Duration(seconds: 10)
-        ..options.receiveTimeout = const Duration(seconds: 10)
-        ..options.baseUrl = AppConstants.domain
-      // ..options.headers = {
-      //   // 'Content-Type': 'application/json',
-      //   // 'Accept': 'application/json',
-      //   // 'accept-language': 'ar',
-      //   'Authorization': 'Bearer $token',
-      //   // 'Accept': 'application/json',
-      // }
-      ;
+    ..options.connectTimeout = const Duration(seconds: 10)
+    ..options.receiveTimeout = const Duration(seconds: 10)
+    ..options.baseUrl = AppConstants.domain;
 
   dio.interceptors.add(
     RetryInterceptor(

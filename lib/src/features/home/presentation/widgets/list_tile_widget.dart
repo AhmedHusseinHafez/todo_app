@@ -54,11 +54,19 @@ class _ListTileWidgetState extends State<ListTileWidget> {
             ),
           ),
           //is Synced
-          Text("${StringsManager.isSynced}: ${widget.model.isSynced}",
+          Text("${StringsManager.state}: ${_syncStatus(widget.model.isSynced)}",
               style: StyleManager.getRegularStyle()),
         ],
       ),
     );
+  }
+
+  String _syncStatus(bool? isSynced) {
+    return widget.model.isSynced == true
+        ? StringsManager.synced
+        : widget.model.isSynced == false
+            ? StringsManager.pending
+            : StringsManager.failed;
   }
 
   Widget _desc() {
