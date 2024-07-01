@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_app/src/core/resources/color_manager.dart';
 import 'package:todo_app/src/core/resources/constants.dart';
 import 'package:todo_app/src/core/resources/font_manager.dart';
+import 'package:todo_app/src/core/resources/injection.dart';
 import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
@@ -12,9 +13,9 @@ import 'package:todo_app/src/core/resources/utils.dart';
 import 'package:todo_app/src/core/resources/values_manager.dart';
 import 'package:todo_app/src/core/widgets/default_text_field.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
+import 'package:todo_app/src/features/home/data/repository/todo_repo.dart';
 import 'package:todo_app/src/features/home/logic/add_task/add_task_cubit.dart';
-import 'package:todo_app/src/features/home/logic/check_box_logic_cubit/check_box_logic_cubit.dart';
-import 'package:todo_app/src/features/home/presentation/widgets/check_box.dart';
+import 'package:todo_app/src/features/home/logic/update_task/update_task_cubit.dart';
 import 'package:todo_app/src/features/home/presentation/widgets/text_field.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,7 +40,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   var _autoValidateMode = AutovalidateMode.disabled;
 
-  String? taskStatus;
+  bool? taskStatusValue;
 
   @override
   void initState() {
@@ -96,31 +97,36 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   Widget _taskState() {
-    return BlocProvider.value(
-      value: RouteGenerator.checkBoxLogicCubit,
-      child: BlocConsumer<CheckBoxLogicCubit, CheckBoxLogicState>(
-        listener: (context, state) {
-          state.mapOrNull(
-            buttonTriggered: (state) {
-              taskStatus = state.taskStatus;
-            },
-          );
-        },
-        builder: (context, state) {
-          return Text(
-            "${StringsManager.taskStatus}: ${taskStatus ?? widget.model!.status}",
-            style: StyleManager.getMediumStyle(
-              fontSize: FontSize.s16,
-              color: (widget.model!.status == AppConstants.taskStateDone
-                      ? true
-                      : false)
-                  ? ColorManager.green
-                  : ColorManager.blue,
-            ),
-          );
-        },
+    return Text(
+      "${StringsManager.taskStatus}: ${_taskStatus(taskStatusValue: taskStatusValue)}",
+      style: StyleManager.getMediumStyle(
+        fontSize: FontSize.s16,
+        color: _taskStatusValue(
+                taskStatus: _taskStatus(taskStatusValue: taskStatusValue))
+            ? ColorManager.green
+            : ColorManager.blue,
       ),
     );
+  }
+
+  String _taskStatus({bool? taskStatusValue}) {
+    if (taskStatusValue == true) {
+      return AppConstants.taskStateDone;
+    } else if (taskStatusValue == false) {
+      return AppConstants.taskStateInProgress;
+    } else {
+      return widget.model!.status!;
+    }
+  }
+
+  bool _taskStatusValue({required String taskStatus}) {
+    if (taskStatus == AppConstants.taskStateDone) {
+      return true;
+    } else if (taskStatus == AppConstants.taskStateInProgress) {
+      return false;
+    } else {
+      return widget.model!.status == AppConstants.taskStateDone ? true : false;
+    }
   }
 
   Widget _body() {
@@ -134,7 +140,8 @@ class _TaskScreenState extends State<TaskScreen> {
               15.verticalSpace,
               if (widget.model != null) _checkbox(),
               15.verticalSpace,
-              _buildButtonBloc(),
+              if (widget.model != null) _buildUpdateTask(),
+              if (widget.model == null) _buildAddTask(),
             ],
           ),
         ),
@@ -188,64 +195,115 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget _checkbox() {
     return Row(
       children: [
-        CheckBoxWidget(model: widget.model!),
+        Checkbox(
+          value: taskStatusValue ??
+                  widget.model?.status == AppConstants.taskStateDone
+              ? true
+              : false,
+          onChanged: (value) {
+            setState(() {
+              taskStatusValue = value!;
+            });
+          },
+        ),
         Text(StringsManager.isTaskCompleted),
       ],
     );
   }
 
-  Widget _buildButtonBloc() {
-    return BlocBuilder<AddTaskCubit, AddTaskState>(
-      builder: (context, state) {
-        state.mapOrNull(
-          createTaskSuccess: (_) {
-            showSuccessToast(StringsManager.taskCreated, context);
-          },
-          createTaskError: (state) {
-            showErrorToast(state.error, context);
-          },
-        );
-        return _button(
-          isLoading:
-              state == const AddTaskState.createTaskLoading() ? true : false,
-        );
-      },
+  Widget _buildAddTask() {
+    return BlocProvider(
+      create: (context) => AddTaskCubit(getIt<ToDoRepository>()),
+      child: BlocConsumer<AddTaskCubit, AddTaskState>(
+        listener: (context, state) {
+          state.mapOrNull(
+            createTaskSuccess: (_) {
+              showSuccessToast(StringsManager.taskCreated, context);
+            },
+            createTaskError: (state) {
+              showErrorToast(state.error, context);
+            },
+          );
+        },
+        builder: (context, state) {
+          return _button(
+            isLoading:
+                state == const AddTaskState.createTaskLoading() ? true : false,
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                context.read<AddTaskCubit>().addTask(
+                      TaskModel(
+                        id: const Uuid().v1(),
+                        title: _titleCtr.text,
+                        description: _descCtr.text,
+                        status: AppConstants.taskStateInProgress,
+                        createdAt: DateTime.now().toIso8601String(),
+                        updatedAt: DateTime.now().toIso8601String(),
+                        isSynced: false,
+                      ),
+                    );
+                _titleCtr.clear();
+                _descCtr.clear();
+              } else {
+                _autoValidateMode = AutovalidateMode.onUserInteraction;
+              }
+            },
+          );
+        },
+      ),
     );
   }
 
-  Widget _button({required bool isLoading}) {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          if (widget.model == null) {
-            context.read<AddTaskCubit>().addTask(
-                  TaskModel(
-                    id: const Uuid().v1(),
-                    title: _titleCtr.text,
-                    description: _descCtr.text,
-                    status: AppConstants.taskStateInProgress,
-                    createdAt: DateTime.now().toIso8601String(),
-                    updatedAt: DateTime.now().toIso8601String(),
-                  ),
+  Widget _buildUpdateTask() {
+    return BlocProvider(
+      create: (context) => UpdateTaskCubit(getIt<ToDoRepository>()),
+      child: BlocConsumer<UpdateTaskCubit, UpdateTaskState>(
+        listener: (context, state) {
+          state.mapOrNull(
+            success: (_) {
+              showSuccessToast(StringsManager.taskUpdated, context);
+            },
+            failure: (state) {
+              showErrorToast(state.error, context);
+            },
+          );
+        },
+        builder: (context, state) {
+          return _button(
+            isLoading: state == const UpdateTaskState.loading() ? true : false,
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                var newModel = TaskModel(
+                  id: widget.model!.id,
+                  createdAt: widget.model!.createdAt,
+                  title: _titleCtr.text,
+                  description: _descCtr.text,
+                  status: (taskStatusValue == true
+                      ? AppConstants.taskStateDone
+                      : (taskStatusValue == false
+                          ? AppConstants.taskStateInProgress
+                          : widget.model!.status)),
+                  updatedAt: DateTime.now().toIso8601String(),
+                  isSynced: false,
                 );
-            _titleCtr.clear();
-            _descCtr.clear();
-            RouteGenerator.getTasksCubit.getTasks();
-          } else {
-            // try {
-            //   widget.model?.title = _titleCtr.text;
-            //   widget.model?.description = _descCtr.text;
-            //   widget.model?.updatedAt = DateTime.now().toIso8601String();
-            //   widget.model?.save();
-            //   showSuccessToast(StringsManager.taskUpdated, context);
-            // } catch (error) {
-            //   showErrorToast(error.toString(), context);
-            // }
-          }
-        } else {
-          _autoValidateMode = AutovalidateMode.onUserInteraction;
-        }
-      },
+                context.read<UpdateTaskCubit>().updateTask(
+                      oldModel: widget.model!,
+                      newModel: newModel,
+                    );
+              } else {
+                _autoValidateMode = AutovalidateMode.onUserInteraction;
+              }
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _button(
+      {required bool isLoading, required void Function()? onPressed}) {
+    return ElevatedButton(
+      onPressed: onPressed,
       child: isLoading
           ? SizedBox(
               width: 20.w,

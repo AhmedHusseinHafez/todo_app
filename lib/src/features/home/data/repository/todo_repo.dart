@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/src/app/app.dart';
@@ -7,6 +5,7 @@ import 'package:todo_app/src/core/resources/common.dart';
 import 'package:todo_app/src/core/resources/constants.dart';
 import 'package:todo_app/src/core/resources/error_strings.dart';
 import 'package:todo_app/src/core/web_services/api_result.dart';
+import 'package:todo_app/src/core/web_services/network_exceptions.dart';
 import 'package:todo_app/src/features/home/data/local_data_source/todo_db_service.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
 import 'package:todo_app/src/features/home/data/remote_data_source/remote_data_source.dart';
@@ -25,7 +24,6 @@ class ToDoRepository {
   final _tasksBox = Hive.box<TaskModel>(_key);
 
   Future<ApiResult<List<TaskModel>?>> fetchToDos() async {
-    log("$kInternetConnection");
     if (kInternetConnection != ConnectivityResult.none &&
         kInternetConnection != null) {
       try {
@@ -53,8 +51,12 @@ class ToDoRepository {
     }
   }
 
-  Future addToDo({required TaskModel task}) async {
-    await _dbService.addToDos(task: task);
+  Future<ApiResult<dynamic>> addToDo({required TaskModel task}) async {
+    return await _dbService.addToDos(task: task);
+  }
+
+  Future upDateToDo({required TaskModel task}) async {
+    await _dbService.updateToDo(task: task);
   }
 
   Future<void> deleteAllToDos() async {
@@ -98,23 +100,49 @@ class ToDoRepository {
     }
   }
 
-  void syncWithServer() async {
-    // try {
-    //   // Retrieve pending tasks from local storage
-    //   List<TaskModel> pendingTasks =
-    //       _tasksBox.values.where((task) => task.isSync == false).toList();
+  Future<ApiResult<TaskModel?>> syncWithServer() async {
+    try {
+      // Retrieve pending tasks from local storage
+      var pendingTasks =
+          _tasksBox.values.where((task) => task.isSynced == false).toList();
 
-    //   // Send pending tasks to the server
-    //   for (var task in pendingTasks) {
-    //     await _toDoApiHandler.addToDo(task);
+      var remoteTasks = await _toDoApiHandler.getToDos();
 
-    //     // Once synced, update local task status
-    //     task.isSync = true;
-    //     await _tasksBox.put(task.id, task);
-    //   }
-    // } catch (e) {
-    //   logger.e('Error syncing tasks: $e');
-    //   // Handle synchronization errors
-    // }
+      // Send pending tasks to the server
+      for (var task in pendingTasks) {
+        if (remoteTasks != null &&
+            remoteTasks.map((task) => task.id).contains(task.id)) {
+          try {
+            task.isSynced = true;
+            task.save();
+            var response = await _toDoApiHandler.updateToDo(task.id, task);
+            return ApiResult.success(response);
+          } catch (error, stackTrace) {
+            task.isSynced = false;
+            task.save();
+            return ApiResult.failure(
+                DioExceptionTypes.getDioException(error, stackTrace));
+          }
+        } else {
+          try {
+            task.isSynced = true;
+            task.save();
+            var response = await _toDoApiHandler.addToDo(task);
+            return ApiResult.success(response);
+          } catch (error, stackTrace) {
+            task.isSynced = false;
+            task.save();
+            return ApiResult.failure(
+                DioExceptionTypes.getDioException(error, stackTrace));
+          }
+        }
+      }
+
+      /// If there are no pending tasks, return success with null.
+      return const ApiResult.success(null);
+    } catch (e) {
+      logger.e('Error syncing tasks: $e');
+      return ApiResult.error('Error syncing tasks: $e');
+    }
   }
 }

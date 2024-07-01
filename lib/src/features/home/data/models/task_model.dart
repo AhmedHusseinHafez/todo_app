@@ -17,6 +17,9 @@ class TaskModel extends HiveObject {
   @HiveField(5)
   String? updatedAt;
 
+  @HiveField(6)
+  bool? isSynced;
+
   TaskModel({
     required this.id,
     required this.title,
@@ -24,6 +27,7 @@ class TaskModel extends HiveObject {
     this.status,
     required this.createdAt,
     this.updatedAt,
+    this.isSynced = false,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +38,7 @@ class TaskModel extends HiveObject {
       status: json['status'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
+      isSynced: json['isSynced'],
     );
   }
 
@@ -45,6 +50,27 @@ class TaskModel extends HiveObject {
       'status': status,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'isSynced': isSynced,
     };
+  }
+
+  TaskModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? status,
+    String? createdAt,
+    String? updatedAt,
+    bool? isSynced,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isSynced: isSynced ?? this.isSynced,
+    );
   }
 }

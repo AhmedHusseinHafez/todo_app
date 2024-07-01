@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       kInternetConnection =
           await InternetConnectionHelper.checkInternetConnection();
       if (kInternetConnection != null) {
-        getIt<ToDoRepository>().syncWithServer();
+        // getIt<ToDoRepository>().syncWithServer();
       }
     }
   }
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           builder: (context, snapshot) {
             if (snapshot.data != null) {
               kInternetConnection = snapshot.data;
-              getIt<ToDoRepository>().syncWithServer();
+              // getIt<ToDoRepository>().syncWithServer();
             }
             return MaterialApp(
               title: StringsManager.appTitle,

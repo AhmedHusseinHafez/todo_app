@@ -28,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     RouteGenerator.getTasksCubit.getTasks();
-    // RouteGenerator.getTasksCubit.getTasksFromApi();
   }
 
   @override
@@ -44,7 +43,9 @@ class _HomePageState extends State<HomePage> {
     return AppBar(title: Text(StringsManager.welcome), actions: [
       IconButton(
         onPressed: () {
-          getIt<ToDoRepository>().syncWithServer();
+          getIt<ToDoRepository>().syncWithServer().then((value) {
+            RouteGenerator.getTasksCubit.getTasks();
+          });
         },
         icon: const Icon(
           Icons.sync,

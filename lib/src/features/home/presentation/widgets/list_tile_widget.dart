@@ -8,7 +8,6 @@ import 'package:todo_app/src/core/resources/route_manager.dart';
 import 'package:todo_app/src/core/resources/strings_manager.dart';
 import 'package:todo_app/src/core/resources/style_manager.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
-import 'package:todo_app/src/features/home/presentation/widgets/check_box.dart';
 
 class ListTileWidget extends StatefulWidget {
   const ListTileWidget({
@@ -31,7 +30,6 @@ class _ListTileWidgetState extends State<ListTileWidget> {
           "model": widget.model,
         });
       },
-      leading: CheckBoxWidget(model: widget.model),
       title: Text(widget.model.title ?? ''),
       subtitle: _desc(),
       trailing: _status(),
@@ -55,6 +53,9 @@ class _ListTileWidgetState extends State<ListTileWidget> {
                   : ColorManager.blue,
             ),
           ),
+          //is Synced
+          Text("${StringsManager.isSynced}: ${widget.model.isSynced}",
+              style: StyleManager.getRegularStyle()),
         ],
       ),
     );

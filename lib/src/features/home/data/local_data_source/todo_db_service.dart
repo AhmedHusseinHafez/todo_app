@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:todo_app/src/core/resources/common.dart';
 import 'package:todo_app/src/core/resources/constants.dart';
 import 'package:todo_app/src/core/resources/error_strings.dart';
+import 'package:todo_app/src/core/web_services/api_result.dart';
 import 'package:todo_app/src/features/home/data/models/task_model.dart';
 
 class ToDoDBService {
@@ -34,12 +35,14 @@ class ToDoDBService {
     }
   }
 
-  Future<void> addToDos({required TaskModel task}) async {
+  Future<ApiResult> addToDos({required TaskModel task}) async {
     try {
-      await _tasksBox.add(task);
+      var response = await _tasksBox.add(task);
+      return ApiResult.success(response);
     } catch (e) {
       // Handle insertion errors
       logger.e('${ErrorStrings.kInsertError} $e');
+      return ApiResult.error('${ErrorStrings.kInsertError} $e');
     }
   }
 
@@ -52,9 +55,9 @@ class ToDoDBService {
     }
   }
 
-  Future<void> updateToDo({required int id, required TaskModel task}) async {
+  Future<void> updateToDo({required TaskModel task}) async {
     try {
-      return await _tasksBox.put(id, task);
+      return await task.save();
     } catch (e) {
       // Handle deletion errors
       logger.e('${ErrorStrings.kUpdateError} $e');

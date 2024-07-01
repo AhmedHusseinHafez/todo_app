@@ -13,11 +13,16 @@ class AddTaskCubit extends Cubit<AddTaskState> {
 
   void addTask(TaskModel task) async {
     emit(const AddTaskState.createTaskLoading());
-    try {
-      await _toDoRepository.addToDo(task: task);
-      emit(AddTaskState.createTaskSuccess(task: task));
-    } catch (e) {
-      emit(AddTaskState.createTaskError(error: e.toString()));
-    }
+    var result = await _toDoRepository.addToDo(task: task);
+
+    result.when(
+      success: (_) {
+        emit(AddTaskState.createTaskSuccess(task: task));
+      },
+      failure: (_) {},
+      error: (error) {
+        emit(AddTaskState.createTaskError(error: error.toString()));
+      },
+    );
   }
 }

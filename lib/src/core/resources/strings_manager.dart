@@ -34,4 +34,6 @@ class StringsManager {
   static String taskDeleted = "Task Deleted";
   static String delete = "Delete";
   static String isTaskCompleted = "Is Task Completed?";
+  //isSynced
+  static String isSynced = "Is Synced?";
 }
