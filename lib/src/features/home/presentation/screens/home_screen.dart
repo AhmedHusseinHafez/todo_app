@@ -47,8 +47,8 @@ class _HomePageState extends State<HomePage> {
       IconButton(
         onPressed: () {
           try {
-            if (kInternetConnection != null &&
-                kInternetConnection != ConnectivityResult.none) {
+            if (kInternetConnectionType != null &&
+                kInternetConnectionType != ConnectivityResult.none) {
               getIt<ToDoRepository>().syncWithServer().then((value) {
                 RouteGenerator.getToDoCubit.getToDos();
               });

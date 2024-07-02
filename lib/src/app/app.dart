@@ -13,7 +13,7 @@ import '../core/resources/route_manager.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
-ConnectivityResult? kInternetConnection;
+ConnectivityResult? kInternetConnectionType;
 
 class MyApp extends StatefulWidget {
   const MyApp._internal();
@@ -41,18 +41,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     switch (state) {
       case AppLifecycleState.resumed:
-        kInternetConnection =
-            await InternetConnectionHelper.checkInternetConnection();
+        kInternetConnectionType =
+            await InternetConnectionHelper.deviceConnectionType();
       case AppLifecycleState.paused:
-        kInternetConnection =
-            await InternetConnectionHelper.checkInternetConnection();
+        kInternetConnectionType =
+            await InternetConnectionHelper.deviceConnectionType();
         _syncDate();
       default:
     }
   }
 
   _syncDate() {
-    if (kInternetConnection != null) {
+    if (kInternetConnectionType != null) {
       try {
         getIt<ToDoRepository>().syncWithServer().then((value) {
           RouteGenerator.getToDoCubit.getToDos();
@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           stream: Connectivity().onConnectivityChanged,
           builder: (context, snapshot) {
             if (snapshot.data != null) {
-              kInternetConnection = snapshot.data;
+              kInternetConnectionType = snapshot.data;
               try {
                 getIt<ToDoRepository>().syncWithServer().then((value) {
                   RouteGenerator.getToDoCubit.getToDos();

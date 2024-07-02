@@ -35,8 +35,8 @@ class ToDoRepository {
   /// otherwise fetches from the local database. Merges remote and local ToDos
   /// if fetched from the server.
   Future<ApiResult<List<ToDoModel>?>> fetchToDos() async {
-    if (kInternetConnection != ConnectivityResult.none &&
-        kInternetConnection != null) {
+    if (kInternetConnectionType != ConnectivityResult.none &&
+        kInternetConnectionType != null) {
       try {
         var remoteToDos = await _toDoApiHandler.getToDos();
         await mergeToDos(remoteToDo: remoteToDos ?? []);

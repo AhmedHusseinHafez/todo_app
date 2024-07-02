@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,11 +13,12 @@ import 'package:todo_app/src/core/web_services/connection_helper.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  log("${await InternetConnectionHelper.checkLocalConnection()}");
   Future.wait([
     hiveInit(),
-    InternetConnectionHelper.checkInternetConnection().then(
+    InternetConnectionHelper.deviceConnectionType().then(
       (value) {
-        kInternetConnection = value;
+        kInternetConnectionType = value;
       },
     ),
     initGetIt(),
